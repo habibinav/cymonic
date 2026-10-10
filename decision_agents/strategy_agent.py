@@ -11,7 +11,7 @@ Pursuit Tiers:
 """
 
 from typing import List
-from schemas import (
+from .schemas import (
     QualificationResult,
     QualificationStatus,
     ReasoningResult,

@@ -9,7 +9,7 @@ from datetime import datetime, date
 import re
 from typing import List, Optional
 
-from schemas import (
+from .schemas import (
     LeadAnalysis,
     BusinessProfile,
     QualificationResult,

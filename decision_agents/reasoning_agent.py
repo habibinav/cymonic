@@ -6,7 +6,7 @@ scoring commercial potential and operational feasibility while detailing pros, r
 """
 
 from typing import List
-from schemas import (
+from .schemas import (
     LeadAnalysis,
     QualificationResult,
     QualificationStatus,
