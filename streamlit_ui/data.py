@@ -59,7 +59,7 @@ def load_verdicts():
 
 
 def run_analysis(progress=None):
-    """Re-runs the agents (with Gemini on the top leads if a key is set). Returns (announcements, using_mock)."""
+    """Re-runs the agents (Gemini on every not-yet-analysed lead if a key is set). Returns (announcements, using_mock)."""
     try:
         return (_from_api("post") if API_URL else _from_pipeline(ai=True, progress=progress)), False
     except Exception:

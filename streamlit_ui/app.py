@@ -60,7 +60,7 @@ with st.container(key="topbar"):
     with c_all, st.container(key="analyze"):
         ai_on = gemini_enabled()
         if st.button("✨ Analyze all" if ai_on else "▶ Analyze all", use_container_width=True,
-                     help="Gemini writes reasoning + proposals for the top leads" if ai_on
+                     help="Gemini writes reasoning + proposals for every lead it has not analysed yet (results are saved)" if ai_on
                      else "Rule-based. Add GEMINI_API_KEY to .env to use Gemini"):
             bar = st.progress(0.0, text="Gemini is analysing leads…" if ai_on else "Running agents…")
             st.session_state["announcements"], st.session_state["using_mock"] = run_analysis(

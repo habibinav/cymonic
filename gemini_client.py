@@ -25,7 +25,7 @@ try:  # load .env from the project root if python-dotenv is installed
 except ImportError:
     pass
 
-MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")  # fast + cheap; set GEMINI_MODEL=gemini-3.8-flash for richer text
 _client = None
 
 
@@ -69,7 +69,7 @@ def _attempts(client, system: str, user: str, json_mode: bool):
     ).text
 
 
-def generate(system: str, user: str, json_mode: bool = False, retries: int = 2) -> str | None:
+def generate(system: str, user: str, json_mode: bool = False, retries: int = 4) -> str | None:
     """Send a prompt to Gemini and return the text reply, or None if anything goes wrong."""
     if not is_enabled():
         return None
@@ -92,7 +92,7 @@ def generate(system: str, user: str, json_mode: bool = False, retries: int = 2) 
                     break  # rate limited — wait and retry instead of trying other call styles
         msg = str(last_error or "")
         if last_error and ("429" in msg or "RESOURCE_EXHAUSTED" in msg) and attempt < retries:
-            time.sleep(5 * (attempt + 1))
+            time.sleep(min(60, 5 * 2 ** attempt))
             continue
         if last_error:
             logger.warning("Gemini call failed: %s", last_error)

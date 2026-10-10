@@ -4,9 +4,10 @@
                  ->  proposal_generator.generate_content
                  ->  plain dicts the Streamlit UI understands
 
-With Gemini on (use_ai=True), the reasoning step is done by gemini_reasoning.py and the
-proposal is written by Gemini through Member 3's prompts. The hard business rules
-(service area, capacity, notice period) always stay rule-based.
+With Gemini on, gemini_batch.py writes the reasoning, scores and a tailored draft for each
+lead (many leads per request, several requests in parallel). The hard business rules
+(service area, capacity, notice period) always stay rule-based, and Member 1's strategy
+agent still turns the scores into a tier.
 
 Run it directly to sanity-check:   python pipeline.py
 The UI calls run_pipeline() via streamlit_ui/data.py.
@@ -17,8 +18,6 @@ import hashlib
 import json
 import math
 import re
-import threading
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
@@ -38,16 +37,17 @@ from proposal_generator import generate_content
 from analysis_agent import analyze_announcement
 
 # Gemini (optional) — reasoning + proposal writing
-import agent as llm_agent
+import gemini_batch
 import gemini_client
-from gemini_reasoning import reason_with_gemini
+from config import HUMAN_REVIEW_DISCLAIMER
+from proposal_generator import validate_generated_content
 
 ROOT = Path(__file__).parent
 DATASET = ROOT / "corporate_catering_hunter_synthetic_dataset_500.csv"
 NEW_LEADS = ROOT / "new_leads.csv"   # announcements pasted into the UI are saved here
 AI_CACHE = ROOT / "ai_cache.json"    # Gemini results, so they survive restarts
-AI_MAX_LEADS = int(__import__("os").getenv("GEMINI_MAX_LEADS", "25"))  # leads per "Analyze all" run
-_AI_LOCK = threading.Lock()
+AI_MAX_LEADS = int(__import__("os").getenv("GEMINI_MAX_LEADS", "0"))  # 0 = no limit per "Analyze all"
+AI_CACHE_VERSION = 2
 
 # One shared business profile. Service areas include all confirmed hubs present in the dataset.
 SERVICE_AREAS = [
@@ -104,13 +104,13 @@ def _money(x):
 
 
 # ---------------------------------------------------------------- one lead
-def _set_proposal_llm(enabled: bool) -> None:
-    """Switch Member 3's proposal generator between Gemini and its templates."""
-    llm_agent.USE_LLM = enabled
-    llm_agent.LLM_PROVIDER = "gemini"
+def _clean_name(name) -> str:
+    # dataset names carry an ID suffix ("Orbit Retail 038") — drop it
+    return re.sub(r"\s+\d+$", "", str(name or "Unknown company"))
 
 
-def process_row(row: dict, use_ai: bool = False) -> dict:
+def _prepare(row: dict) -> dict:
+    """Facts + rule-based qualification and reasoning for one lead (fast, no AI)."""
     people = _int(row.get("attendee_count"))
     days = _int(row.get("event_duration_days")) or 1
     location = _clean(row.get("event_location"))
@@ -123,9 +123,9 @@ def process_row(row: dict, use_ai: bool = False) -> dict:
     missing = [name for name, val in (("Event Location", location), ("Attendance Estimate", people),
                                       ("Event Date", event_date)) if val is None]
 
-    # ---- Member 1: decide
+    # ---- Member 1: qualify + rule-based reasoning
     a1 = m1.LeadAnalysis(
-        company_name=_clean(row.get("company_name")),
+        company_name=_clean_name(_clean(row.get("company_name"))),
         event_name=_clean(row.get("event_type")),
         event_type=_clean(row.get("event_type")),
         event_date=event_date,
@@ -138,18 +138,62 @@ def process_row(row: dict, use_ai: bool = False) -> dict:
     )
     q1 = qualify(a1, PROFILE_M1)
     r1 = evaluate(a1, q1)
+    return dict(row=row, people=people, days=days, location=location, event_date=event_date,
+                text=text, deal=deal, missing=missing, a1=a1, q1=q1, r1=r1)
+
+
+def _ai_payload(ctx: dict) -> dict:
+    """What Gemini sees for one lead."""
+    q1, a1 = ctx["q1"], ctx["a1"]
+    return {
+        "id": str(ctx["row"].get("lead_id")),
+        "company": a1.company_name, "event_type": a1.event_type, "date": ctx["event_date"],
+        "location": ctx["location"], "attendees": ctx["people"], "duration_days": ctx["days"],
+        "catering_signal": _clean(ctx["row"].get("catering_signal")),
+        "estimated_deal_value_inr": ctx["deal"],
+        "announcement": ctx["text"],
+        "qualification_status": q1.status.value,
+        "missing_info": q1.missing_critical_info,
+        "catering_evidence_found": q1.has_catering_demand_evidence,
+    }
+
+
+def _score(v, fallback):
+    try:
+        return round(max(0.0, min(10.0, float(v))), 1)
+    except (TypeError, ValueError):
+        return fallback
+
+
+def _list(v):
+    if isinstance(v, list):
+        return [str(x).strip() for x in v if str(x).strip()][:6]
+    return [str(v)] if v else []
+
+
+def _finish(ctx: dict, ai: dict | None = None) -> dict:
+    """Tier + proposal + UI shape. `ai` is Gemini's result for this lead (or None for rule-based)."""
+    a1, q1, r1 = ctx["a1"], ctx["q1"], ctx["r1"]
+    people, days, location, event_date, text, deal = (ctx[k] for k in
+                                                     ("people", "days", "location", "event_date", "text", "deal"))
+    row = ctx["row"]
     ai_used = []
-    if use_ai and q1.status != m1.QualificationStatus.DISQUALIFIED:
-        facts = {
-            "company": a1.company_name, "event_type": a1.event_type, "date": event_date,
-            "location": location, "attendees": people, "duration_days": days,
-            "catering_signal": _clean(row.get("catering_signal")), "estimated_deal_value_inr": deal,
-            "announcement": text,
-        }
-        ai_reasoning = reason_with_gemini(facts, q1, r1)
-        if ai_reasoning:
-            r1 = ai_reasoning
-            ai_used.append("reasoning")
+
+    if ai and q1.status != m1.QualificationStatus.DISQUALIFIED:
+        r1 = m1.ReasoningResult(
+            reasoning_summary=str(ai.get("summary", "")).strip() or r1.reasoning_summary,
+            positives=_list(ai.get("positives")),
+            risks=_list(ai.get("risks")),
+            uncertainties=_list(ai.get("uncertainties")),
+            commercial_potential_score=_score(ai.get("commercial_potential_score"), r1.commercial_potential_score),
+            operational_feasibility_score=_score(ai.get("operational_feasibility_score"), r1.operational_feasibility_score),
+            recommended_next_action=str(ai.get("next_action") or r1.recommended_next_action),
+        )
+        ai_used.append("reasoning")
+    else:
+        ai = None
+
+    # ---- Member 1: strategy (tier) from the scores
     s1 = choose_strategy(q1, r1)
     tier = s1.pursuit_tier.value
 
@@ -165,7 +209,7 @@ def process_row(row: dict, use_ai: bool = False) -> dict:
         catering_signal=_clean(row.get("catering_signal")) or "unknown",
         source_url=a1.source_url,
         announcement_text=text,
-        unknown_fields=missing,
+        unknown_fields=ctx["missing"],
     )
     q3 = m3.QualificationResult(
         status=q1.status.value,
@@ -182,11 +226,22 @@ def process_row(row: dict, use_ai: bool = False) -> dict:
         proposal_required=tier in ("light_outreach", "standard_proposal", "high_effort_pitch"),
     )
 
-    # ---- Member 3: write the pitch / outreach / research checklist
-    content = generate_content(a3, q3, r3, st3, PROFILE_M3)
-    if (use_ai and content.content_type in ("light_outreach", "standard_proposal", "high_effort_pitch")
-            and not any("template fallback" in w for w in content.warnings)):
+    # ---- proposal: Gemini's draft (sanitised by Member 3's checks) or Member 3's template
+    draft = str((ai or {}).get("draft") or "").strip()
+    if ai and draft and ai.get("tier") == tier:
+        draft, val_warnings = validate_generated_content(draft_text=draft, business_profile=PROFILE_M3, analysis=a3)
+        if tier == "needs_research":
+            proposal = "**Internal research checklist (not for the client)**\n\n" + draft
+        else:
+            proposal = draft if HUMAN_REVIEW_DISCLAIMER in draft else f"{HUMAN_REVIEW_DISCLAIMER}\n\n{draft}"
+        warnings = val_warnings
         ai_used.append("proposal")
+    else:
+        content = generate_content(a3, q3, r3, st3, PROFILE_M3)
+        proposal = content.draft_text
+        if not proposal and content.research_questions:
+            proposal = "Research checklist:\n" + "\n".join(f"• {q}" for q in content.research_questions)
+        warnings = content.warnings
 
     # ---- shape for the UI
     verdict = TIER_TO_VERDICT.get(tier, "skip")
@@ -195,6 +250,8 @@ def process_row(row: dict, use_ai: bool = False) -> dict:
             why = f"Outside service area ({location.split(',')[0]})"
         else:
             why = q1.disqualification_reasons[0] if q1.disqualification_reasons else "Disqualified"
+    elif ai and ai.get("headline"):
+        why = str(ai["headline"]).strip()
     elif tier == "needs_research":
         why = "Needs research — missing " + ", ".join(q1.missing_critical_info).lower()
     else:
@@ -204,14 +261,10 @@ def process_row(row: dict, use_ai: bool = False) -> dict:
         bits.append(f"score {r1.commercial_potential_score}/10")
         why = ", ".join(bits)
 
-    proposal = content.draft_text
-    if not proposal and content.research_questions:
-        proposal = "Research checklist:\n" + "\n".join(f"• {q}" for q in content.research_questions)
-
+    next_steps = [r1.recommended_next_action] if ai else s1.action_items
     return {
         "id": str(row.get("lead_id")),
-        # dataset names carry an ID suffix ("Orbit Retail 038") — drop it so events group by company
-        "company": re.sub(r"\s+\d+$", "", a1.company_name or "Unknown company"),
+        "company": a1.company_name or "Unknown company",
         "title": a1.event_type or "Event",
         "date": _pretty_date(event_date),
         "location": location.split(",")[0] if location else None,
@@ -225,7 +278,7 @@ def process_row(row: dict, use_ai: bool = False) -> dict:
             [r1.reasoning_summary] + r1.positives
             + [f"Risk: {x}" for x in r1.risks]
             + [f"Unclear: {x}" for x in r1.uncertainties]
-            + [f"Next: {x}" for x in s1.action_items]
+            + [f"Next: {x}" for x in next_steps]
         ),
         "dossier": {
             "event": a1.event_type,
@@ -238,9 +291,13 @@ def process_row(row: dict, use_ai: bool = False) -> dict:
             "announcement": text,
         },
         "proposal": proposal,
-        "warnings": content.warnings,
+        "warnings": warnings,
         "ai": ai_used,   # which parts Gemini wrote: "reasoning", "proposal"
     }
+
+
+def process_row(row: dict, ai: dict | None = None) -> dict:
+    return _finish(_prepare(row), ai)
 
 
 # ---------------------------------------------------------------- all leads
@@ -252,24 +309,14 @@ def _row_key(row: dict) -> str:
 
 def _load_cache() -> dict:
     try:
-        return json.loads(AI_CACHE.read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {}
+        cache = json.loads(AI_CACHE.read_text(encoding="utf-8"))
+        return cache if cache.get("_version") == AI_CACHE_VERSION else {"_version": AI_CACHE_VERSION}
+    except (FileNotFoundError, json.JSONDecodeError, AttributeError):
+        return {"_version": AI_CACHE_VERSION}
 
 
 def _save_cache(cache: dict) -> None:
     AI_CACHE.write_text(json.dumps(cache, ensure_ascii=False, indent=1), encoding="utf-8")
-
-
-def _process_ai(row: dict) -> dict:
-    """Gemini version of process_row, cached by lead data."""
-    lead = process_row(row, use_ai=True)
-    if lead.get("ai"):
-        with _AI_LOCK:
-            cache = _load_cache()
-            cache[str(row.get("lead_id"))] = {"key": _row_key(row), "lead": lead}
-            _save_cache(cache)
-    return lead
 
 
 def run_pipeline(csv_path: str | Path = DATASET, limit: int | None = None) -> list[dict]:
@@ -329,14 +376,15 @@ def process_announcement(text: str, source_url: str | None = None, save: bool = 
     }
     if save:
         pd.DataFrame([row]).to_csv(NEW_LEADS, mode="a", header=not NEW_LEADS.exists(), index=False)
-    if gemini_client.is_enabled():
-        _set_proposal_llm(True)
-        try:
-            lead = _process_ai(row)
-        finally:
-            _set_proposal_llm(False)
-    else:
-        lead = process_row(row)
+    ctx = _prepare(row)
+    ai = None
+    if gemini_client.is_enabled() and ctx["q1"].status != m1.QualificationStatus.DISQUALIFIED:
+        ai = gemini_batch.analyze([_ai_payload(ctx)], PROFILE_M3).get(str(row["lead_id"]))
+        if ai:
+            cache = _load_cache()
+            cache[str(row["lead_id"])] = {"key": _row_key(row), "ai": ai}
+            _save_cache(cache)
+    lead = _finish(ctx, ai)
     lead["is_new"] = True
     return lead
 
@@ -351,60 +399,46 @@ def _all_rows() -> list[dict]:
 def run_all(ai: bool = False, progress=None) -> list[dict]:
     """Every lead (pasted announcements first, then the dataset).
 
-    ai=False: rule-based for everything, plus any Gemini results saved from earlier runs.
-    ai=True:  also sends the best AI_MAX_LEADS not-yet-analysed leads to Gemini.
+    ai=False: rule-based, plus any Gemini results saved from earlier runs (instant).
+    ai=True:  also sends every lead Gemini hasn't analysed yet (best first, in parallel batches).
     progress: optional callback(done, total) for a progress bar.
     """
     rows = _all_rows()
-    _set_proposal_llm(False)
-    leads = []
-    for row in rows:
-        clean = {k: v for k, v in row.items() if k != "_new"}
-        try:
-            lead = process_row(clean)
-        except Exception as e:
-            lead = {"id": str(row.get("lead_id")), "company": str(row.get("company_name")), "title": "Error",
-                    "date": None, "location": None, "people": None, "verdict": "skip",
-                    "why": f"Pipeline error: {e}", "duplicate_of": None, "source": None,
-                    "reasoning": [], "dossier": None, "proposal": "", "ai": []}
-        leads.append(lead)
-
+    cleans = [{k: v for k, v in r.items() if k != "_new"} for r in rows]
+    ctxs = [_prepare(r) for r in cleans]
     cache = _load_cache()
-    by_index = {}
-    for i, row in enumerate(rows):
-        clean = {k: v for k, v in row.items() if k != "_new"}
-        hit = cache.get(str(row.get("lead_id")))
-        if hit and hit.get("key") == _row_key(clean):
-            leads[i] = hit["lead"]
-        by_index[i] = clean
+
+    def cached_ai(i):
+        hit = cache.get(str(cleans[i].get("lead_id")))
+        return hit["ai"] if isinstance(hit, dict) and hit.get("key") == _row_key(cleans[i]) else None
 
     if ai and gemini_client.is_enabled():
-        # Pick the most promising leads Gemini hasn't seen yet (skip out-of-policy ones).
-        todo = [i for i, l in enumerate(leads)
-                if not l.get("ai") and l.get("verdict") != "skip"]
-        todo.sort(key=lambda i: ({"high": 0, "standard": 1, "light": 2}.get(leads[i]["verdict"], 3),
-                                 -(leads[i].get("people") or 0)))
-        todo = todo[:AI_MAX_LEADS]
-        _set_proposal_llm(True)
-        try:
-            done = 0
-            with ThreadPoolExecutor(max_workers=4) as pool:
-                futures = {pool.submit(_process_ai, by_index[i]): i for i in todo}
-                for fut in futures:
-                    i = futures[fut]
-                    try:
-                        leads[i] = fut.result()
-                    except Exception:
-                        pass
-                    done += 1
-                    if progress:
-                        progress(done, len(todo))
-        finally:
-            _set_proposal_llm(False)
+        rule_tier = {i: choose_strategy(c["q1"], c["r1"]).pursuit_tier.value for i, c in enumerate(ctxs)}
+        todo = [i for i, c in enumerate(ctxs)
+                if c["q1"].status != m1.QualificationStatus.DISQUALIFIED and cached_ai(i) is None]
+        order = {"high_effort_pitch": 0, "standard_proposal": 1, "light_outreach": 2, "needs_research": 3}
+        todo.sort(key=lambda i: (order.get(rule_tier[i], 4), -(ctxs[i]["people"] or 0)))
+        if AI_MAX_LEADS:
+            todo = todo[:AI_MAX_LEADS]
+        results = gemini_batch.analyze([_ai_payload(ctxs[i]) for i in todo], PROFILE_M3, progress=progress)
+        for i in todo:
+            res = results.get(str(cleans[i].get("lead_id")))
+            if res:
+                cache[str(cleans[i].get("lead_id"))] = {"key": _row_key(cleans[i]), "ai": res}
+        _save_cache(cache)
 
-    for i, row in enumerate(rows):
-        if row.get("_new"):
-            leads[i]["is_new"] = True
+    leads = []
+    for i, ctx in enumerate(ctxs):
+        try:
+            lead = _finish(ctx, cached_ai(i))
+        except Exception as e:  # one bad row shouldn't kill the whole run
+            lead = {"id": str(cleans[i].get("lead_id")), "company": str(cleans[i].get("company_name")),
+                    "title": "Error", "date": None, "location": None, "people": None, "verdict": "skip",
+                    "why": f"Pipeline error: {e}", "duplicate_of": None, "source": None,
+                    "reasoning": [], "dossier": None, "proposal": "", "ai": []}
+        if rows[i].get("_new"):
+            lead["is_new"] = True
+        leads.append(lead)
     return leads
 
 
