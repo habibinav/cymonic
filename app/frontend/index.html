@@ -192,6 +192,14 @@
   .md-li { padding-left: 16px; position: relative; }
   .md-li::before { content: "•"; position: absolute; left: 2px; color: var(--c); }
   .md-gap { height: 8px; }
+  .mail-btn { margin-top: 14px; padding: 10px 22px; border-radius: 6px; font-size: 15px; background: #fff; color: #000;
+    transition: transform .15s, background .2s; }
+  .mail-btn:hover { transform: scale(1.04); background: #e2e2e2; }
+  .mail { margin-top: 14px; border: 1px solid var(--border); border-radius: 8px; background: #0f0f0f; padding: 16px;
+    font-size: 14px; line-height: 1.6; color: #e0e0e0; animation: rise .4s var(--ease) both; }
+  .mail-status { color: #4cc38a; font-size: 13px; margin-bottom: 12px; }
+  .mail-head { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; }
+  .mail-head span { display: inline-block; width: 64px; color: var(--muted); }
   .copy { position: absolute; top: 10px; right: 10px; font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 4px; background: #fff; color: #000; }
   .muted { color: var(--muted); font-size: 14px; }
   .linkish { color: var(--c); font-weight: 500; font-size: 14px; padding: 0; }
@@ -544,12 +552,52 @@ function openLead(id, keepScroll = false) {
         <div class="h">Proposal</div>
         ${a.proposal ? `<div class="proposal"><button class="copy" data-copy="${a.id}">Copy</button><div class="md">${md(a.proposal)}</div></div>`
                      : `<div class="muted">${a.verdict === 'skip' ? 'Skipped — no proposal needed.' : 'No proposal drafted yet.'}</div>`}
+        ${canMail(a) ? mailBlock(a) : ''}
       </div>
     </div>`;
   $('#scrim').classList.add('show');
   if (!keepScroll) $('#scrim').scrollTop = 0;
 }
 const closeLead = () => $('#scrim').classList.remove('show');
+
+/* ---------- "Send mail" (simulated) ----------
+   The brief forbids real email: "sending" = rendering the fully formatted email on screen.
+   Nothing leaves the app; sent state lives only in this browser tab. */
+const SENDER = 'Apex Corporate Catering Co.';
+const sentMail = {};   // lead id -> time it was "sent"
+
+const canMail = a => a.proposal && ['high', 'standard', 'light'].includes(a.verdict) && a.tier !== 'needs_research';
+
+function mailParts(a) {
+  const lines = String(a.proposal).split('\n').filter(l => !/draft for human review/i.test(l));
+  const subjIdx = lines.findIndex(l => /^\s*\**subject:/i.test(l));
+  const subject = subjIdx >= 0
+    ? lines[subjIdx].replace(/^\s*\**subject:\**\s*/i, '').replace(/\*\*/g, '')
+    : `Catering for ${a.company}'s ${a.title || 'event'}${a.date ? ' on ' + a.date : ''}`;
+  const body = lines.filter((_, i) => i !== subjIdx).join('\n').trim();
+  return { subject, body };
+}
+
+function mailBlock(a) {
+  const sent = sentMail[a.id];
+  if (!sent) return `<button class="mail-btn" data-mail="${a.id}">✉ Send mail</button>`;
+  const { subject, body } = mailParts(a);
+  return `
+    <div class="mail">
+      <div class="mail-status">✓ Sent (simulated) at ${esc(sent)} — rendered here only, no email left this app</div>
+      <div class="mail-head">
+        <div><span>From</span>${esc(SENDER)} &lt;events@apex-catering.example&gt;</div>
+        <div><span>To</span>${esc(a.company)} — [event organiser's email]</div>
+        <div><span>Subject</span>${esc(subject)}</div>
+      </div>
+      <div class="md">${md(body)}</div>
+    </div>`;
+}
+
+function sendMail(id) {
+  sentMail[id] = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  openLead(id, true);
+}
 
 function copyText(text, btn) {
   const done = () => { btn.textContent = 'Copied'; setTimeout(() => (btn.textContent = 'Copy'), 1500); };
@@ -562,10 +610,11 @@ function copyText(text, btn) {
 
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-open],[data-cat],[data-home],[data-switch],[data-close],[data-copy],[data-folder],[data-unfolder],[data-analyze]');
+  const t = e.target.closest('[data-mail],[data-open],[data-cat],[data-home],[data-switch],[data-close],[data-copy],[data-folder],[data-unfolder],[data-analyze]');
   if (e.target.id === 'scrim') return closeLead();
   if (!t) return;
   if (t.dataset.analyze) return requestAnalysis(t.dataset.analyze.split(','), t.dataset.label || 'leads');
+  if (t.dataset.mail) return sendMail(t.dataset.mail);
   if (t.dataset.copy) return copyText(byId[t.dataset.copy].proposal, t);
   if (t.dataset.open) return openLead(t.dataset.open);
   if (t.dataset.folder) return openFolder(t.dataset.folder, t);
