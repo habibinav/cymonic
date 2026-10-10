@@ -3,3 +3,5 @@ pytest>=7.0.0
 pandas>=2.0.0
 streamlit>=1.30.0
 python-dotenv>=1.0.0
+streamlit>=1.40
+requests

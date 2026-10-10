@@ -1,0 +1,53 @@
+"""Where the UI gets its data.
+
+Default: runs the real pipeline (../pipeline.py) on the dataset CSV in-process.
+Optional: set CATERING_API_URL to fetch from an HTTP backend instead.
+If both fail, falls back to mock data (the UI shows a "mock data" badge).
+"""
+import os
+import sys
+import traceback
+from pathlib import Path
+
+from mock_data import MOCK_ANNOUNCEMENTS
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+API_URL = os.getenv("CATERING_API_URL", "").rstrip("/")
+
+
+def _unwrap(payload):
+    return payload if isinstance(payload, list) else payload.get("announcements", [])
+
+
+def _from_pipeline():
+    from pipeline import run_pipeline
+    return run_pipeline()
+
+
+def _from_api(method="get"):
+    import requests
+    path = "/api/verdicts" if method == "get" else "/api/analyze"
+    r = requests.request(method, f"{API_URL}{path}", timeout=300)
+    r.raise_for_status()
+    return _unwrap(r.json())
+
+
+def load_verdicts():
+    """Returns (announcements, using_mock)."""
+    try:
+        return (_from_api() if API_URL else _from_pipeline()), False
+    except Exception:
+        traceback.print_exc()
+        return MOCK_ANNOUNCEMENTS, True
+
+
+def run_analysis():
+    """Re-runs the agents. Returns (announcements, using_mock)."""
+    try:
+        return (_from_api("post") if API_URL else _from_pipeline()), False
+    except Exception:
+        traceback.print_exc()
+        return MOCK_ANNOUNCEMENTS, True
