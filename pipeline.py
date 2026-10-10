@@ -28,8 +28,14 @@ from proposal_generator import generate_content
 ROOT = Path(__file__).parent
 DATASET = ROOT / "corporate_catering_hunter_synthetic_dataset_500.csv"
 
-# One shared business profile. Service areas include both spellings the dataset uses.
-SERVICE_AREAS = ["Kochi", "Ernakulam", "Trivandrum", "Thiruvananthapuram", "Bangalore", "Bengaluru", "Chennai"]
+# One shared business profile. Service areas include all confirmed hubs present in the dataset.
+SERVICE_AREAS = [
+    "Kochi", "Ernakulam", "Trivandrum", "Thiruvananthapuram",
+    "Bangalore", "Bengaluru", "Chennai", "Mumbai", "Pune",
+    "Delhi", "New Delhi", "Noida", "Gurugram", "Gurgaon",
+    "Hyderabad", "Kolkata", "Ahmedabad", "Jaipur", "Lucknow",
+    "Indore", "Bhubaneswar", "Coimbatore", "Goa", "Mysuru", "Visakhapatnam"
+]
 PROFILE_M1 = m1.BusinessProfile(service_areas=SERVICE_AREAS)
 PROFILE_M3 = m3.BusinessProfile(
     company_name="Apex Corporate Catering Co.",
@@ -43,7 +49,7 @@ TIER_TO_VERDICT = {
     "high_effort_pitch": "high",
     "standard_proposal": "standard",
     "light_outreach": "light",
-    "needs_research": "skip",
+    "needs_research": "light",
     "none": "skip",
 }
 
@@ -221,5 +227,7 @@ if __name__ == "__main__":
     print(f"{len(errors)} errors", errors[:2])
     top = next((l for l in leads if l["verdict"] == "high"), None)
     if top:
-        print("\nSample high-effort lead:", top["company"], "|", top["why"])
-        print(top["proposal"][:400])
+        safe_why = str(top["why"]).encode("ascii", "replace").decode("ascii")
+        print("\nSample high-effort lead:", top["company"], "|", safe_why)
+        safe_prop = str(top["proposal"][:400]).encode("ascii", "replace").decode("ascii")
+        print(safe_prop)
