@@ -59,15 +59,10 @@ def call_llm(system_prompt: str, user_prompt: str) -> str | None:
             return response.choices[0].message.content
 
         elif LLM_PROVIDER == "gemini":
-            import google.generativeai as genai  # type: ignore
-            api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel(
-                model_name=LLM_MODEL or "gemini-1.5-flash",
-                system_instruction=system_prompt,
-            )
-            resp = model.generate_content(user_prompt)
-            return resp.text
+            # Uses the current google-genai SDK via gemini_client (the old google.generativeai
+            # package and gemini-1.5 models are retired). Asks for a JSON reply.
+            from gemini_client import generate
+            return generate(system_prompt, user_prompt, json_mode=True)
 
         elif LLM_PROVIDER == "anthropic":
             import anthropic  # type: ignore

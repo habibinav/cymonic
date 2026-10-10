@@ -22,9 +22,23 @@ def _unwrap(payload):
     return payload if isinstance(payload, list) else payload.get("announcements", [])
 
 
-def _from_pipeline():
-    from pipeline import run_pipeline
-    return run_pipeline()
+def _from_pipeline(ai=False, progress=None):
+    from pipeline import run_all
+    return run_all(ai=ai, progress=progress)
+
+
+def gemini_enabled():
+    try:
+        import gemini_client
+        return gemini_client.is_enabled()
+    except Exception:
+        return False
+
+
+def analyze_new(text, source_url=None):
+    """Run a pasted announcement through the agents. Returns the lead dict."""
+    from pipeline import process_announcement
+    return process_announcement(text, source_url)
 
 
 def _from_api(method="get"):
@@ -44,10 +58,10 @@ def load_verdicts():
         return MOCK_ANNOUNCEMENTS, True
 
 
-def run_analysis():
-    """Re-runs the agents. Returns (announcements, using_mock)."""
+def run_analysis(progress=None):
+    """Re-runs the agents (with Gemini on the top leads if a key is set). Returns (announcements, using_mock)."""
     try:
-        return (_from_api("post") if API_URL else _from_pipeline()), False
+        return (_from_api("post") if API_URL else _from_pipeline(ai=True, progress=progress)), False
     except Exception:
         traceback.print_exc()
         return MOCK_ANNOUNCEMENTS, True
