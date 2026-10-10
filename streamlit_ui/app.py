@@ -12,7 +12,7 @@ from pathlib import Path
 import streamlit as st
 import streamlit.components.v1 as components
 
-from data import analyze_new, load_verdicts, run_analysis
+from data import analyze_new, gemini_enabled, load_verdicts, run_analysis
 
 st.set_page_config(page_title="Catering Hunter", page_icon="🍴", layout="wide", initial_sidebar_state="collapsed")
 
@@ -52,15 +52,21 @@ with st.container(key="topbar"):
                 )
                 url = st.text_input("Source URL (optional)")
                 if st.form_submit_button("Analyze", type="primary", use_container_width=True) and text.strip():
-                    with st.spinner("Running agents…"):
+                    with st.spinner("Gemini is reading the announcement…" if gemini_enabled() else "Running agents…"):
                         lead = analyze_new(text.strip(), url.strip() or None)
                     st.session_state["announcements"] = [lead] + st.session_state["announcements"]
                     st.session_state["open_lead"] = lead["id"]
                     st.rerun()
     with c_all, st.container(key="analyze"):
-        if st.button("▶ Analyze all", use_container_width=True):
-            with st.spinner("Running agents…"):
-                st.session_state["announcements"], st.session_state["using_mock"] = run_analysis()
+        ai_on = gemini_enabled()
+        if st.button("✨ Analyze all" if ai_on else "▶ Analyze all", use_container_width=True,
+                     help="Gemini writes reasoning + proposals for the top leads" if ai_on
+                     else "Rule-based. Add GEMINI_API_KEY to .env to use Gemini"):
+            bar = st.progress(0.0, text="Gemini is analysing leads…" if ai_on else "Running agents…")
+            st.session_state["announcements"], st.session_state["using_mock"] = run_analysis(
+                progress=lambda done, total: bar.progress(done / max(total, 1), text=f"Gemini: {done}/{total} leads")
+            )
+            bar.empty()
 
 # ---------------------------------------------------------------- UI
 template = (Path(__file__).parent / "ui.html").read_text(encoding="utf-8")

@@ -4,13 +4,21 @@
                  ->  proposal_generator.generate_content
                  ->  plain dicts the Streamlit UI understands
 
+With Gemini on (use_ai=True), the reasoning step is done by gemini_reasoning.py and the
+proposal is written by Gemini through Member 3's prompts. The hard business rules
+(service area, capacity, notice period) always stay rule-based.
+
 Run it directly to sanity-check:   python pipeline.py
 The UI calls run_pipeline() via streamlit_ui/data.py.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 import re
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 
@@ -29,9 +37,17 @@ from proposal_generator import generate_content
 # Member 4 — reads raw announcement text and extracts the event facts
 from analysis_agent import analyze_announcement
 
+# Gemini (optional) — reasoning + proposal writing
+import agent as llm_agent
+import gemini_client
+from gemini_reasoning import reason_with_gemini
+
 ROOT = Path(__file__).parent
 DATASET = ROOT / "corporate_catering_hunter_synthetic_dataset_500.csv"
 NEW_LEADS = ROOT / "new_leads.csv"   # announcements pasted into the UI are saved here
+AI_CACHE = ROOT / "ai_cache.json"    # Gemini results, so they survive restarts
+AI_MAX_LEADS = int(__import__("os").getenv("GEMINI_MAX_LEADS", "25"))  # leads per "Analyze all" run
+_AI_LOCK = threading.Lock()
 
 # One shared business profile. Service areas include both spellings the dataset uses.
 SERVICE_AREAS = ["Kochi", "Ernakulam", "Trivandrum", "Thiruvananthapuram", "Bangalore", "Bengaluru", "Chennai"]
@@ -82,7 +98,13 @@ def _money(x):
 
 
 # ---------------------------------------------------------------- one lead
-def process_row(row: dict) -> dict:
+def _set_proposal_llm(enabled: bool) -> None:
+    """Switch Member 3's proposal generator between Gemini and its templates."""
+    llm_agent.USE_LLM = enabled
+    llm_agent.LLM_PROVIDER = "gemini"
+
+
+def process_row(row: dict, use_ai: bool = False) -> dict:
     people = _int(row.get("attendee_count"))
     days = _int(row.get("event_duration_days")) or 1
     location = _clean(row.get("event_location"))
@@ -110,6 +132,18 @@ def process_row(row: dict) -> dict:
     )
     q1 = qualify(a1, PROFILE_M1)
     r1 = evaluate(a1, q1)
+    ai_used = []
+    if use_ai and q1.status != m1.QualificationStatus.DISQUALIFIED:
+        facts = {
+            "company": a1.company_name, "event_type": a1.event_type, "date": event_date,
+            "location": location, "attendees": people, "duration_days": days,
+            "catering_signal": _clean(row.get("catering_signal")), "estimated_deal_value_inr": deal,
+            "announcement": text,
+        }
+        ai_reasoning = reason_with_gemini(facts, q1, r1)
+        if ai_reasoning:
+            r1 = ai_reasoning
+            ai_used.append("reasoning")
     s1 = choose_strategy(q1, r1)
     tier = s1.pursuit_tier.value
 
@@ -144,6 +178,9 @@ def process_row(row: dict) -> dict:
 
     # ---- Member 3: write the pitch / outreach / research checklist
     content = generate_content(a3, q3, r3, st3, PROFILE_M3)
+    if (use_ai and content.content_type in ("light_outreach", "standard_proposal", "high_effort_pitch")
+            and not any("template fallback" in w for w in content.warnings)):
+        ai_used.append("proposal")
 
     # ---- shape for the UI
     verdict = TIER_TO_VERDICT.get(tier, "skip")
@@ -196,10 +233,39 @@ def process_row(row: dict) -> dict:
         },
         "proposal": proposal,
         "warnings": content.warnings,
+        "ai": ai_used,   # which parts Gemini wrote: "reasoning", "proposal"
     }
 
 
 # ---------------------------------------------------------------- all leads
+def _row_key(row: dict) -> str:
+    """Changes if the lead's data changes, so stale Gemini results aren't reused."""
+    raw = json.dumps({k: _clean(v) for k, v in row.items()}, sort_keys=True, default=str)
+    return hashlib.sha1(raw.encode()).hexdigest()[:12]
+
+
+def _load_cache() -> dict:
+    try:
+        return json.loads(AI_CACHE.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def _save_cache(cache: dict) -> None:
+    AI_CACHE.write_text(json.dumps(cache, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+def _process_ai(row: dict) -> dict:
+    """Gemini version of process_row, cached by lead data."""
+    lead = process_row(row, use_ai=True)
+    if lead.get("ai"):
+        with _AI_LOCK:
+            cache = _load_cache()
+            cache[str(row.get("lead_id"))] = {"key": _row_key(row), "lead": lead}
+            _save_cache(cache)
+    return lead
+
+
 def run_pipeline(csv_path: str | Path = DATASET, limit: int | None = None) -> list[dict]:
     df = pd.read_csv(csv_path)
     if limit:
@@ -257,19 +323,82 @@ def process_announcement(text: str, source_url: str | None = None, save: bool = 
     }
     if save:
         pd.DataFrame([row]).to_csv(NEW_LEADS, mode="a", header=not NEW_LEADS.exists(), index=False)
-    lead = process_row(row)
+    if gemini_client.is_enabled():
+        _set_proposal_llm(True)
+        try:
+            lead = _process_ai(row)
+        finally:
+            _set_proposal_llm(False)
+    else:
+        lead = process_row(row)
     lead["is_new"] = True
     return lead
 
 
-def run_all() -> list[dict]:
-    """Dataset leads plus any announcements pasted into the UI earlier (newest first)."""
-    leads = run_pipeline()
+def _all_rows() -> list[dict]:
+    rows = pd.read_csv(DATASET).to_dict(orient="records")
     if NEW_LEADS.exists():
-        new = run_pipeline(NEW_LEADS)
-        for lead in new:
-            lead["is_new"] = True
-        leads = new[::-1] + leads
+        rows = [dict(r, _new=True) for r in pd.read_csv(NEW_LEADS).to_dict(orient="records")][::-1] + rows
+    return rows
+
+
+def run_all(ai: bool = False, progress=None) -> list[dict]:
+    """Every lead (pasted announcements first, then the dataset).
+
+    ai=False: rule-based for everything, plus any Gemini results saved from earlier runs.
+    ai=True:  also sends the best AI_MAX_LEADS not-yet-analysed leads to Gemini.
+    progress: optional callback(done, total) for a progress bar.
+    """
+    rows = _all_rows()
+    _set_proposal_llm(False)
+    leads = []
+    for row in rows:
+        clean = {k: v for k, v in row.items() if k != "_new"}
+        try:
+            lead = process_row(clean)
+        except Exception as e:
+            lead = {"id": str(row.get("lead_id")), "company": str(row.get("company_name")), "title": "Error",
+                    "date": None, "location": None, "people": None, "verdict": "skip",
+                    "why": f"Pipeline error: {e}", "duplicate_of": None, "source": None,
+                    "reasoning": [], "dossier": None, "proposal": "", "ai": []}
+        leads.append(lead)
+
+    cache = _load_cache()
+    by_index = {}
+    for i, row in enumerate(rows):
+        clean = {k: v for k, v in row.items() if k != "_new"}
+        hit = cache.get(str(row.get("lead_id")))
+        if hit and hit.get("key") == _row_key(clean):
+            leads[i] = hit["lead"]
+        by_index[i] = clean
+
+    if ai and gemini_client.is_enabled():
+        # Pick the most promising leads Gemini hasn't seen yet (skip out-of-policy ones).
+        todo = [i for i, l in enumerate(leads)
+                if not l.get("ai") and l.get("verdict") != "skip"]
+        todo.sort(key=lambda i: ({"high": 0, "standard": 1, "light": 2}.get(leads[i]["verdict"], 3),
+                                 -(leads[i].get("people") or 0)))
+        todo = todo[:AI_MAX_LEADS]
+        _set_proposal_llm(True)
+        try:
+            done = 0
+            with ThreadPoolExecutor(max_workers=4) as pool:
+                futures = {pool.submit(_process_ai, by_index[i]): i for i in todo}
+                for fut in futures:
+                    i = futures[fut]
+                    try:
+                        leads[i] = fut.result()
+                    except Exception:
+                        pass
+                    done += 1
+                    if progress:
+                        progress(done, len(todo))
+        finally:
+            _set_proposal_llm(False)
+
+    for i, row in enumerate(rows):
+        if row.get("_new"):
+            leads[i]["is_new"] = True
     return leads
 
 
