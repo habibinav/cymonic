@@ -10444,5 +10444,31 @@
    "tier": "light_outreach",
    "draft": "Subject: Catering support for BlueRiver Renewables Lucknow reception\n\nDear BlueRiver Renewables Team,\n\nWe noticed your upcoming networking reception planned for Lucknow on 2027-02-14. Apex Corporate Catering Co. offers specialized refreshment and high tea services ideal for corporate networking events.\n\nWe can provide tailored menus including vegetarian, non-vegetarian, vegan, and jain selections to suit your guests.\n\nCould you please share [confirm guest count] and [confirm event date] so we can assist with your arrangements?\n\nApex Corporate Catering Co."
   }
+ },
+ "LEAD-0426": {
+  "key": "44c2390a1c5e",
+  "ai": {
+   "id": "LEAD-0426",
+   "headline": "High-value 2-day Mumbai project partners meeting for 110 attendees",
+   "summary": "UrbanNest Properties is seeking catering menus and pricing for a 110-attendee project partners meeting in Mumbai spanning 2 days. With an estimated deal value of INR 165,000, this multi-day engagement offers solid commercial value and strong potential for future real estate sector partnerships.",
+   "positives": [
+    "Clear multi-day schedule (2 days)",
+    "Substantial guest count (110 attendees)",
+    "Open invitation for catering vendors to submit menus and pricing"
+   ],
+   "risks": [
+    "Competition from other invited vendors",
+    "Exact meal slots and dietary distribution need confirmation"
+   ],
+   "uncertainties": [
+    "Exact timing of meals across the two days",
+    "Specific venue facilities and setup guidelines"
+   ],
+   "commercial_potential_score": 7.8,
+   "operational_feasibility_score": 8.0,
+   "next_action": "Submit customized multi-day menu proposals and pricing tiers to UrbanNest Properties",
+   "tier": "high_effort_pitch",
+   "draft": "### Why This Event Matters\nUrbanNest Properties' two-day project partners meeting brings together 110 key stakeholders in Mumbai. Delivering a seamless culinary experience across both days positions Apex Corporate Catering Co. as a trusted partner for future real estate summits and corporate gatherings.\n\n### Proposed Catering Approach\nFor a multi-day partners meeting, we recommend a balanced structure featuring our signature corporate lunch buffets, paired with morning and afternoon refreshments and high tea options. We accommodate diverse dietary preferences including vegetarian, non-vegetarian, vegan, and jain requirements to ensure every partner is well-catered for.\n\n### What We Need to Confirm\n- Exact daily schedule and meal timings for [confirm event date]\n- Specific venue address and pantry/kitchen facilities at [confirm venue address and facilities]\n- Finalized dietary breakdown for the [confirm guest count] attendees\n\n### Next Step\nWe look forward to presenting our detailed menu selections and competitive pricing structure for your review.\n\nSincerely,\nApex Corporate Catering Co."
+  }
  }
 }
