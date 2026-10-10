@@ -664,20 +664,20 @@ def _generate_with_llm(
     """Attempt content generation via configured LLM with strict validation and error handling."""
     from agent import call_llm
 
-    system_prompt = build_system_prompt(effective_content_type)
-    user_prompt = build_user_prompt(
-        analysis_data=_to_clean_dict(analysis),
-        qualification_data=_to_clean_dict(qualification),
-        reasoning_data=_to_clean_dict(reasoning),
-        strategy_data=_to_clean_dict(strategy),
-        business_profile_data=_to_clean_dict(business_profile),
-    )
-
-    raw_response = call_llm(system_prompt=system_prompt, user_prompt=user_prompt)
-    if not raw_response:
-        return None
-
     try:
+        system_prompt = build_system_prompt(effective_content_type)
+        user_prompt = build_user_prompt(
+            analysis_data=_to_clean_dict(analysis),
+            qualification_data=_to_clean_dict(qualification),
+            reasoning_data=_to_clean_dict(reasoning),
+            strategy_data=_to_clean_dict(strategy),
+            business_profile_data=_to_clean_dict(business_profile),
+        )
+
+        raw_response = call_llm(system_prompt=system_prompt, user_prompt=user_prompt)
+        if not raw_response:
+            return None
+
         # Strip code fences if present
         clean_text = raw_response.strip()
         if clean_text.startswith("```"):
@@ -715,7 +715,7 @@ def _generate_with_llm(
         )
 
     except Exception as exc:
-        logger.warning("Failed to parse or validate LLM response: %s", exc)
+        logger.warning("Failed to generate or validate LLM response: %s", exc)
         return None
 
 

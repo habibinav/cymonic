@@ -23,8 +23,14 @@ def _unwrap(payload):
 
 
 def _from_pipeline():
-    from pipeline import run_pipeline
-    return run_pipeline()
+    from pipeline import run_all
+    return run_all()
+
+
+def analyze_new(text, source_url=None):
+    """Run a pasted announcement through the agents. Returns the lead dict."""
+    from pipeline import process_announcement
+    return process_announcement(text, source_url)
 
 
 def _from_api(method="get"):

@@ -26,8 +26,12 @@ from decision_agents.strategy_agent import choose_strategy
 import schemas as m3
 from proposal_generator import generate_content
 
+# Member 4 — reads raw announcement text and extracts the event facts
+from analysis_agent import analyze_announcement
+
 ROOT = Path(__file__).parent
 DATASET = ROOT / "corporate_catering_hunter_synthetic_dataset_500.csv"
+NEW_LEADS = ROOT / "new_leads.csv"   # announcements pasted into the UI are saved here
 
 # One shared business profile. Service areas include both spellings the dataset uses.
 SERVICE_AREAS = ["Kochi", "Ernakulam", "Trivandrum", "Thiruvananthapuram", "Bangalore", "Bengaluru", "Chennai"]
@@ -85,6 +89,8 @@ def process_row(row: dict) -> dict:
     event_date = _clean(row.get("event_date"))
     text = _clean(row.get("announcement_text")) or ""
     deal = _clean(row.get("estimated_deal_value"))
+    if deal is None and people:
+        deal = people * days * 750   # rough estimate (~₹750 per head per day, matches the dataset)
 
     missing = [name for name, val in (("Event Location", location), ("Attendance Estimate", people),
                                       ("Event Date", event_date)) if val is None]
@@ -210,6 +216,61 @@ def run_pipeline(csv_path: str | Path = DATASET, limit: int | None = None) -> li
                 "reasoning": [], "dossier": None, "proposal": "",
             })
     return out
+
+
+# ---------------------------------------------------------------- new announcements
+def _guess_headcount(text: str) -> int | None:
+    m = re.search(r"\b(\d{2,5})\s*(?:employees|staff|members|visitors|participants|pax|people)\b", text, re.I)
+    return int(m.group(1)) if m else None
+
+
+EVENT_WORDS = ["summit", "conference", "convention", "workshop", "offsite", "seminar", "training", "town hall",
+               "kickoff", "launch", "gala", "meetup", "hackathon", "celebration", "party", "forum", "expo", "meeting"]
+
+
+def _guess_event_type(text: str) -> str | None:
+    """Fallback when the analysis agent can't name the event: 'a 2-day tech summit in' -> 'Tech Summit'."""
+    for word in EVENT_WORDS:
+        m = re.search(rf"((?:[A-Za-z]+\s){{0,2}}{word})\b", text, re.I)
+        if m:
+            words = [w for w in m.group(1).split() if w.lower() not in ("a", "an", "the", "our", "its", "their", "day", "days")]
+            return " ".join(words).title() or word.title()
+    return None
+
+def process_announcement(text: str, source_url: str | None = None, save: bool = True) -> dict:
+    """Run one pasted announcement through the full flow:
+    analysis_agent (Member 4) -> decision_agents (Member 1) -> proposal_generator (Member 3)."""
+    analysis = analyze_announcement(m3.LeadInput(announcement_text=text, source_url=source_url or None))
+    event_type = analysis.event_type or _guess_event_type(text)
+    row = {
+        "lead_id": analysis.lead_id,
+        "announcement_text": text,
+        "source_url": analysis.source_url,
+        "company_name": analysis.company_name,
+        "event_type": event_type,
+        "event_date": analysis.event_date,
+        "event_location": analysis.event_location,
+        "attendee_count": analysis.attendee_count or _guess_headcount(text),
+        "event_duration_days": analysis.event_duration_days,
+        "catering_signal": analysis.catering_signal,
+        "estimated_deal_value": None,
+    }
+    if save:
+        pd.DataFrame([row]).to_csv(NEW_LEADS, mode="a", header=not NEW_LEADS.exists(), index=False)
+    lead = process_row(row)
+    lead["is_new"] = True
+    return lead
+
+
+def run_all() -> list[dict]:
+    """Dataset leads plus any announcements pasted into the UI earlier (newest first)."""
+    leads = run_pipeline()
+    if NEW_LEADS.exists():
+        new = run_pipeline(NEW_LEADS)
+        for lead in new:
+            lead["is_new"] = True
+        leads = new[::-1] + leads
+    return leads
 
 
 if __name__ == "__main__":

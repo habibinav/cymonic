@@ -27,7 +27,7 @@
 
   /* ---------- nav ---------- */
   .nav { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between;
-    gap: 16px; padding: 18px 190px 18px 48px; background: linear-gradient(to bottom, rgba(13,13,13,.95), rgba(13,13,13,0)); }
+    gap: 16px; padding: 18px 430px 18px 48px; background: linear-gradient(to bottom, rgba(13,13,13,.95), rgba(13,13,13,0)); }
   .logo { font-weight: 500; letter-spacing: .2em; font-size: 20px; color: #e5484d; text-transform: uppercase; }
   .logo span { color: var(--text); font-weight: 500; letter-spacing: .02em; text-transform: none; font-size: 14px; margin-left: 12px; opacity: .7; }
   .search { background: rgba(0,0,0,.6); border: 1px solid #444; color: var(--text); border-radius: 6px;
@@ -93,6 +93,7 @@
     background: radial-gradient(circle at 85% 15%, var(--c2), transparent 65%), linear-gradient(135deg, var(--c3), #111); }
   .poster .initial { position: absolute; right: 10px; top: -14px; font-size: 120px; font-weight: 300; color: var(--c); opacity: .18; line-height: 1; }
   .poster .rank { position: absolute; left: 14px; top: 12px; font-size: 11px; font-weight: 500; letter-spacing: .1em; color: var(--c); }
+  .newbadge { position: absolute; left: 14px; top: 12px; font-size: 10px; letter-spacing: .12em; padding: 2px 7px; border-radius: 3px; background: var(--c); color: #000; }
   .poster h3 { margin: 0; font-size: 21px; font-weight: 500; line-height: 1.1; position: relative; }
   .lbody { padding: 12px 16px 16px; }
   .lmeta { display: flex; gap: 10px; font-size: 13px; color: var(--muted); margin-bottom: 8px; flex-wrap: wrap; }
@@ -229,6 +230,7 @@
 <script>
 const DATA = (__DATA__).map(a => ({ ...a, company: String(a.company || 'Unknown').replace(/\s+\d+$/, '') }));
 const USING_MOCK = __MOCK__;
+const OPEN_ON_LOAD = __OPEN__;
 
 const VERDICTS = [
   { key: 'high',     label: 'High-effort pitch', blurb: 'Big deals worth a custom pitch' },
@@ -310,6 +312,7 @@ function leadCard(a, i, showRank, inFolder = false) {
       <div class="poster">
         <div class="initial">${esc(a.company[0])}</div>
         ${showRank ? `<div class="rank">${showRank}</div>` : ''}
+        ${a.is_new ? '<div class="newbadge">NEW</div>' : ''}
         <h3>${esc(inFolder ? a.title : a.company)}</h3>
       </div>
       <div class="lbody">
@@ -543,6 +546,7 @@ $('#q-home').addEventListener('input', e => {
 $('#q-cat').addEventListener('input', e => renderCategory(current, e.target.value.trim().toLowerCase()));
 
 renderHome();
+if (OPEN_ON_LOAD) setTimeout(() => openLead(OPEN_ON_LOAD), 300);
 </script>
 </body>
 </html>
