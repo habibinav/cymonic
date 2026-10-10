@@ -10,6 +10,7 @@ The UI calls run_pipeline() via streamlit_ui/data.py.
 from __future__ import annotations
 
 import math
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -160,7 +161,8 @@ def process_row(row: dict) -> dict:
 
     return {
         "id": str(row.get("lead_id")),
-        "company": a1.company_name or "Unknown company",
+        # dataset names carry an ID suffix ("Orbit Retail 038") — drop it so events group by company
+        "company": re.sub(r"\s+\d+$", "", a1.company_name or "Unknown company"),
         "title": a1.event_type or "Event",
         "date": _pretty_date(event_date),
         "location": location.split(",")[0] if location else None,

@@ -86,7 +86,7 @@
 
   /* ---------- lead cards ---------- */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
-  .lcard { position: relative; text-align: left; border-radius: 8px; overflow: hidden; background: var(--panel);
+  .lcard { position: relative; text-align: left; display: flex; flex-direction: column; justify-content: flex-start; border-radius: 8px; overflow: hidden; background: var(--panel);
     transition: transform .3s var(--ease), box-shadow .3s var(--ease); animation: rise .55s var(--ease) both; }
   .lcard:hover { transform: scale(1.06); z-index: 3; box-shadow: 0 18px 40px rgba(0,0,0,.75); }
   .poster { position: relative; height: 130px; padding: 14px 16px; display: flex; align-items: flex-end;
@@ -99,6 +99,29 @@
   .lmeta .ppl { color: var(--text); font-weight: 500; }
   .lwhy { font-size: 14px; color: #d4d4d4; line-height: 1.45; }
   .dup { color: var(--muted); font-style: italic; }
+
+  /* ---------- company folders ---------- */
+  .fcard { position: relative; text-align: left; display: block; padding: 0; border-radius: 8px; animation: rise .55s var(--ease) both;
+    transition: transform .3s var(--ease); margin: 10px 10px 0 0; }
+  .fcard::before, .fcard::after { content: ""; position: absolute; inset: 0; border-radius: 8px; background: var(--panel);
+    border: 1px solid rgba(255,255,255,.06); transition: transform .3s var(--ease); }
+  .fcard::before { transform: translate(10px, -10px); opacity: .45; }
+  .fcard::after  { transform: translate(5px, -5px);  opacity: .75; }
+  .fcard:hover { transform: scale(1.05); z-index: 3; }
+  .fcard:hover::before { transform: translate(16px, -16px) rotate(1.5deg); }
+  .fcard:hover::after  { transform: translate(8px, -8px) rotate(.75deg); }
+  .fcard .inner { position: relative; z-index: 1; border-radius: 8px; overflow: hidden; background: var(--panel);
+    box-shadow: 0 10px 30px rgba(0,0,0,.5); height: 100%; }
+  .fcard .poster h3 { display: flex; align-items: center; gap: 10px; }
+  .ftag { position: absolute; left: 14px; top: 12px; display: inline-flex; align-items: center; gap: 6px; font-size: 11px;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--c); }
+  .flist { list-style: none; margin: 6px 0 0; padding: 0; font-size: 13px; color: #cfcfcf; line-height: 1.7; }
+  .flist li { display: flex; justify-content: space-between; gap: 10px; }
+  .flist li span:last-child { color: var(--muted); white-space: nowrap; }
+  .flist .more { color: var(--c); }
+  .crumbs { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+  .crumbs button { color: var(--muted); padding: 0; transition: color .2s; }
+  .crumbs button:hover { color: var(--text); }
 
   /* ---------- category page ---------- */
   .cat-hero { position: relative; margin-top: -70px; padding: 110px 48px 36px;
@@ -204,7 +227,7 @@
   <div class="scrim" id="scrim"><div class="modal" id="modal"></div></div>
 
 <script>
-const DATA = __DATA__;
+const DATA = (__DATA__).map(a => ({ ...a, company: String(a.company || 'Unknown').replace(/\s+\d+$/, '') }));
 const USING_MOCK = __MOCK__;
 
 const VERDICTS = [
@@ -222,6 +245,7 @@ const inVerdict = k => sortLeads(DATA.filter(a => a.verdict === k));
 const matches = (a, q) => !q || ['company', 'title', 'why', 'location'].some(f => (a[f] || '').toLowerCase().includes(q));
 
 let current = null;   // open category key
+let folder = null;    // open company folder inside a category
 
 // tiny markdown: ## headings, - bullets, **bold**
 function md(text) {
@@ -280,17 +304,50 @@ function renderHome() {
   }).join('');
 }
 
-function leadCard(a, i, showRank) {
+function leadCard(a, i, showRank, inFolder = false) {
   return `
     <button class="lcard tone-${a.verdict}" data-open="${a.id}" style="animation-delay:${Math.min(i, 12) * 0.045}s">
       <div class="poster">
         <div class="initial">${esc(a.company[0])}</div>
         ${showRank ? `<div class="rank">${showRank}</div>` : ''}
-        <h3>${esc(a.company)}</h3>
+        <h3>${esc(inFolder ? a.title : a.company)}</h3>
       </div>
       <div class="lbody">
-        <div class="lmeta"><span class="ppl">${a.people ?? '–'} people</span><span>${eventLine(a)}</span></div>
+        <div class="lmeta"><span class="ppl">${a.people ?? '–'} people</span><span>${inFolder ? [a.location, a.date].filter(Boolean).map(esc).join(' · ') : eventLine(a)}</span></div>
         <div class="lwhy">${whyText(a)}</div>
+      </div>
+    </button>`;
+}
+
+/* ---------- company folders ---------- */
+function groupByCompany(list) {
+  const groups = new Map();
+  list.forEach(a => { if (!groups.has(a.company)) groups.set(a.company, []); groups.get(a.company).push(a); });
+  return [...groups.entries()]
+    .map(([company, leads]) => ({ company, leads: sortLeads(leads) }))
+    .sort((x, y) => (y.leads[0].people || 0) - (x.leads[0].people || 0));
+}
+
+const FOLDER_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
+
+function folderCard(g, key, i) {
+  const total = g.leads.reduce((s, a) => s + (a.people || 0), 0);
+  const shown = g.leads.slice(0, 3);
+  return `
+    <button class="fcard tone-${key}" data-folder="${esc(g.company)}" style="animation-delay:${Math.min(i, 12) * 0.045}s">
+      <div class="inner">
+        <div class="poster">
+          <div class="initial">${esc(g.company[0])}</div>
+          <div class="ftag">${FOLDER_ICON} ${g.leads.length} events</div>
+          <h3>${esc(g.company)}</h3>
+        </div>
+        <div class="lbody">
+          <div class="lmeta"><span class="ppl">${total} people total</span></div>
+          <ul class="flist">
+            ${shown.map(a => `<li><span>${esc(a.title)}</span><span>${esc(a.date || '')}</span></li>`).join('')}
+            ${g.leads.length > 3 ? `<li class="more">+${g.leads.length - 3} more</li>` : ''}
+          </ul>
+        </div>
       </div>
     </button>`;
 }
@@ -302,6 +359,20 @@ function renderCategory(key, q = '') {
   const shown = list.filter(a => matches(a, q));
   const hero = $('#cat-hero');
   hero.className = `cat-hero tone-${key}`;
+
+  if (folder) {   // inside a company folder
+    const leads = sortLeads(shown.filter(a => a.company === folder));
+    const all = list.filter(a => a.company === folder);
+    hero.innerHTML = `
+      <div class="crumbs"><button data-home>Verdicts</button>›<button data-unfolder>${v.label}</button>›<span>${esc(folder)}</span></div>
+      <div class="cat-title"><h1>${esc(folder)}</h1><span class="n">${all.length}</span></div>
+      <p>${all.length} events in ${v.label.toLowerCase()} · ${all.reduce((s, a) => s + (a.people || 0), 0)} people total</p>`;
+    $('#cat-grid').innerHTML = leads.length
+      ? leads.map((a, i) => leadCard(a, i, '', true)).join('')
+      : '<div class="empty">Nothing here for that search.</div>';
+    return;
+  }
+
   hero.innerHTML = `
     <button class="back" data-home>‹ Back to verdicts</button>
     <div class="cat-title"><h1>${v.label}</h1><span class="n">${list.length}</span></div>
@@ -309,14 +380,17 @@ function renderCategory(key, q = '') {
     <div class="tabs">${VERDICTS.map(o =>
       `<button class="tab tone-${o.key} ${o.key === key ? 'active' : ''}" data-switch="${o.key}">${o.label} · ${inVerdict(o.key).length}</button>`).join('')}
     </div>`;
-  $('#cat-grid').innerHTML = shown.length
-    ? shown.map((a, i) => leadCard(a, i, key === 'high' ? `TOP ${i + 1}` : '')).join('')
+  const groups = groupByCompany(shown);
+  $('#cat-grid').innerHTML = groups.length
+    ? groups.map((g, i) => g.leads.length > 1
+        ? folderCard(g, key, i)
+        : leadCard(g.leads[0], i, '')).join('')
     : `<div class="empty">Nothing here${q ? ' for that search' : ''}.</div>`;
 }
 
 /* ---------- transitions ---------- */
 function openCategory(key, fromEl) {
-  current = key;
+  current = key; folder = null;
   $('#q-cat').value = '';
   renderCategory(key);
   $('#category').scrollTop = 0;
@@ -347,14 +421,43 @@ function switchCategory(key) {
   const grid = $('#cat-grid');
   grid.style.transition = 'opacity .2s'; grid.style.opacity = 0;
   setTimeout(() => {
-    current = key; $('#q-cat').value = '';
+    current = key; folder = null; $('#q-cat').value = '';
     renderCategory(key);
     grid.style.opacity = 1;
   }, 200);
 }
 
+function zoomFrom(el, key, after) {
+  const r = el.getBoundingClientRect();
+  const z = document.createElement('div');
+  z.className = `zoom tone-${key}`;
+  Object.assign(z.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' });
+  document.body.appendChild(z);
+  requestAnimationFrame(() => requestAnimationFrame(() =>
+    Object.assign(z.style, { left: 0, top: 0, width: '100vw', height: '100vh', borderRadius: 0 })));
+  setTimeout(() => { after(); z.style.opacity = 0; setTimeout(() => z.remove(), 500); }, 380);
+}
+
+function openFolder(company, fromEl) {
+  zoomFrom(fromEl, current, () => {
+    folder = company; $('#q-cat').value = '';
+    renderCategory(current);
+    $('#category').scrollTop = 0;
+  });
+}
+
+function closeFolder() {
+  const grid = $('#cat-grid'), hero = $('#cat-hero');
+  [grid, hero].forEach(el => { el.style.transition = 'opacity .2s'; el.style.opacity = 0; });
+  setTimeout(() => {
+    folder = null; $('#q-cat').value = '';
+    renderCategory(current);
+    [grid, hero].forEach(el => (el.style.opacity = 1));
+  }, 200);
+}
+
 function goHome() {
-  current = null;
+  current = null; folder = null;
   $('#category').classList.add('hidden');
   setTimeout(() => $('#home').classList.remove('hidden'), 120);
 }
@@ -409,11 +512,13 @@ function copyText(text, btn) {
 
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-open],[data-cat],[data-home],[data-switch],[data-close],[data-copy]');
+  const t = e.target.closest('[data-open],[data-cat],[data-home],[data-switch],[data-close],[data-copy],[data-folder],[data-unfolder]');
   if (e.target.id === 'scrim') return closeLead();
   if (!t) return;
   if (t.dataset.copy) return copyText(byId[t.dataset.copy].proposal, t);
   if (t.dataset.open) return openLead(t.dataset.open);
+  if (t.dataset.folder) return openFolder(t.dataset.folder, t);
+  if ('unfolder' in t.dataset) return closeFolder();
   if (t.dataset.cat) return openCategory(t.dataset.cat, t.classList.contains('vcard') ? t : null);
   if (t.dataset.switch) return switchCategory(t.dataset.switch);
   if ('home' in t.dataset) return goHome();
@@ -423,6 +528,7 @@ document.addEventListener('click', e => {
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if ($('#scrim').classList.contains('show')) closeLead();
+  else if (folder) closeFolder();
   else if (current) goHome();
 });
 
