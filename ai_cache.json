@@ -1,0 +1,519 @@
+{
+ "LEAD-0491": {
+  "key": "9f1a2ce7cf8a",
+  "lead": {
+   "id": "LEAD-0491",
+   "company": "Keystone Pharma",
+   "title": "Employee appreciation event",
+   "date": "13 Nov 2026",
+   "location": "New Delhi",
+   "people": 800,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "2-day employee appreciation event, ~₹12.0L deal, score 8.5/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0491",
+   "reasoning": [
+    "This is a high-value opportunity with Keystone Pharma 491 hosting an 800-person, 2-day employee appreciation event in New Delhi. With an estimated deal value of ₹12,00,000 and an included networking reception, the commercial upside is substantial despite catering specifics not yet being published.",
+    "High attendee count of 800 people across a 2-day event offers substantial order volume.",
+    "Strong estimated deal value of ₹12,00,000.",
+    "Fully within the New Delhi service area and verified capacity limits.",
+    "Employee appreciation events with networking receptions typically allocate budget for quality corporate hospitality.",
+    "Risk: Managing logistics and food service for 800 attendees across multiple days requires tight execution.",
+    "Risk: Catering demand is currently inferred from the networking reception announcement rather than explicitly detailed.",
+    "Unclear: Exact meal types and frequency required across the 2 days (e.g., full lunches vs. only reception bites).",
+    "Unclear: Specific venue selection and on-site kitchen/staging facilities in New Delhi.",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Employee appreciation event",
+    "where": "New Delhi, Delhi, India",
+    "when": "2026-11-13",
+    "duration": "2 day(s)",
+    "deal value": "₹12.0L",
+    "commercial score": "8.5/10",
+    "feasibility": "9.0/10",
+    "announcement": "Fictional announcement: Keystone Pharma 491 will host a employee appreciation event in New Delhi, Delhi, India on 2026-11-13. A networking reception is planned; specific catering arrangements are not published."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\nEXECUTIVE CATERING PROPOSAL: KEYSTONE PHARMA 491 EMPLOYEE APPRECIATION EVENT\n\n1. Executive Opportunity Overview\nKeystone Pharma 491 is hosting a 2-day employee appreciation event in New Delhi, Delhi, commencing on November 13, 2026, with an expected attendance of 800 guests. With a networking reception planned as part of the gathering, Apex Corporate Catering Co. is pleased to present a comprehensive catering framework designed to support large-scale corporate hospitality while maintaining smooth service flow across the 2-day schedule.\n\n2. Tailored Catering Solution\nDrawing strictly upon our confirmed corporate catering capabilities and operational range (handling up to 1,000 guests), Apex Corporate Catering Co. proposes the following service structure:\n- Corporate Lunch & Buffet Service: Efficient, multi-station buffet service structured to accommodate 800 attendees smoothly during scheduled lunch breaks.\n- Networking Reception & High Tea: Curated high tea and refreshment setups designed to facilitate active networking during reception hours.\n- Executive Dining Options: Targeted executive dining solutions for leadership sessions or special appreciation segments.\n- Dietary Inclusivity: Comprehensive menu options covering vegetarian, non-vegetarian, vegan, and Jain dietary preferences.\n\n3. Strategic Planning & Operational Considerations\n- Flow Management: Staggered buffet stations to prevent congestion and ensure quick turnaround for 800 guests within allocated session intervals.\n- Multi-Day Coordination: Coordinated logistics across both event days to maintain consistent freshness, timing, and replenishment.\n- Venue Facilities: Staging, replenishment cycles, and service layout will be tailored once the specific venue infrastructure is verified.\n\n4. Commercial Framework\n- Daily Delegate Rates & Reception Packages: [to be confirmed after requirements are validated]\n- Service & Equipment Logistics: [to be confirmed after requirements are validated]\n- Total Commercial Estimate: [to be confirmed after requirements are validated]\n\n5. Next Steps & Information Required\nTo finalize menus and provide a formal commercial quotation, we welcome the opportunity to confirm the following details:\n- [confirm venue address and facilities]\n- Confirmation of exact meal sessions across the 2 days (e.g., full lunch schedules vs. reception refreshments only)\n- Final guest counts and specific dietary distribution",
+   "warnings": [
+    "Specific catering arrangements have not been formally published or requested by Keystone Pharma 491.",
+    "Exact venue address and on-site kitchen/staging facilities remain unconfirmed.",
+    "Pricing details are not established in the business profile; formal quotes require requirement validation."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ },
+ "LEAD-0304": {
+  "key": "b456e659a384",
+  "lead": {
+   "id": "LEAD-0304",
+   "company": "Orbit Retail",
+   "title": "Sales kickoff",
+   "date": "20 Mar 2027",
+   "location": "Lucknow",
+   "people": 800,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "2-day sales kickoff, ~₹14.4L deal, score 8.7/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0304",
+   "reasoning": [
+    "This is a high-value commercial opportunity featuring Orbit Retail 304's 2-day sales kickoff for 800 attendees in Lucknow, with an estimated value of ₹14,40,000. The requirement explicitly confirms meals and refreshments, backed by an ample 161-day planning window and full operational alignment in our service area.",
+    "High-volume, multi-day engagement with 800 attendees across 2 days generating an estimated ₹14,40,000 in revenue.",
+    "Catering requirement is explicit, confirming that meals and refreshments will be served.",
+    "Generous lead time of 161 days allows thorough procurement, menu curation, and logistical preparation.",
+    "Annual sales kickoffs offer strong potential for recurring corporate business.",
+    "Risk: Managing high-throughput meal and refreshment service for 800 people over consecutive days requires tight venue coordination and kitchen management to avoid delays.",
+    "Risk: Potential risk of menu fatigue across a two-day event if variety is not adequately planned.",
+    "Unclear: Specific venue selection and on-site kitchen/staging infrastructure in Lucknow.",
+    "Unclear: Exact meal breakdown per day (e.g., breakfast, lunch, high tea, dinner) and dietary requirements.",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Sales kickoff",
+    "where": "Lucknow, Uttar Pradesh, India",
+    "when": "2027-03-20",
+    "duration": "2 day(s)",
+    "deal value": "₹14.4L",
+    "commercial score": "8.7/10",
+    "feasibility": "9.2/10",
+    "announcement": "Fictional company update: Orbit Retail 304 is planning a sales kickoff in Lucknow, Uttar Pradesh, India for 2027-03-20. The notice explicitly states that meals and refreshments will be served."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\nExecutive Catering Proposal: Orbit Retail 304 Sales Kickoff\n\n1. Executive Overview\nApex Corporate Catering Co. is pleased to present this catering proposal for Orbit Retail 304's upcoming 2-day Sales Kickoff in Lucknow, Uttar Pradesh, India, scheduled to begin on March 20, 2027. We understand this milestone internal event brings together 800 attendees, requiring seamless meal and refreshment execution across both days.\n\n2. Tailored Catering Solution\nLeveraging our verified catering capabilities, Apex Corporate Catering Co. proposes a full-service hospitality program tailored to high-energy corporate assemblies:\n- Corporate Lunch & Buffet Service: Multi-station buffet service designed to deliver wholesome corporate lunches efficiently, minimizing transition times between keynote sessions.\n- Continuous Refreshments & High Tea: Scheduled and ongoing refreshment stations offering morning and afternoon high tea to keep 800 participants energized.\n- Executive Dining: Dedicated dining arrangements available for leadership or VIP guests as required.\n- Comprehensive Dietary Management: Full compliance with diverse preferences, including vegetarian, non-vegetarian, vegan, and Jain dietary preparations.\n\n3. Strategic Planning & Flow Considerations\n- Throughput Management: Deployment of multiple synchronized buffet lines to accommodate 800 attendees smoothly within scheduled meal windows.\n- Menu Rotation: Varied menus across Day 1 and Day 2 to prevent repetition and provide variety throughout the multi-day event.\n- Staging & Service Coordination: Precise scheduling aligned with your agenda to ensure refreshments and lunches are refreshed promptly without interrupting proceedings.\n\n4. Commercial Framework\n- 2-Day Complete Kickoff Package (Lunch, High Tea, Refreshments for 800 guests): [to be confirmed after requirements are validated]\n- Executive Dining Service (if required): [to be confirmed after requirements are validated]\n- Logistics, Setup, and Service Staffing: [to be confirmed after requirements are validated]\n\n5. Next Steps & Information Checklist\nTo finalize the commercial proposal and secure dates, please help us confirm:\n- [confirm venue address and facilities] in Lucknow, including kitchen and staging access.\n- Finalized daily agenda with exact service timings for breaks and lunches.\n- Final dietary requirement breakdown across the 800 delegates.",
+   "warnings": [
+    "Pricing details are not available in the business profile; all commercial terms require validation before submitting.",
+    "Specific venue location and staging infrastructure in Lucknow are currently unconfirmed.",
+    "Exact meal schedule and breakdown between plenary sessions and executive dining are unconfirmed."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ },
+ "LEAD-0249": {
+  "key": "5b0f61b969e7",
+  "lead": {
+   "id": "LEAD-0249",
+   "company": "UrbanNest Properties",
+   "title": "Team workshop",
+   "date": "9 Mar 2027",
+   "location": "Goa",
+   "people": 800,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "1-day team workshop, ~₹4.0L deal, score 8.5/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0249",
+   "reasoning": [
+    "This is a high-value single-day catering opportunity for UrbanNest Properties 249's 800-person team workshop in Goa, with an estimated deal value of ₹4,00,000. Catering needs are explicit, covering both lunch and afternoon refreshments. With extensive advance notice and capacity within limits, this deal is highly commercially viable and operationally sound.",
+    "Explicit catering demand for two meal services (lunch and afternoon refreshments).",
+    "High guest count of 800 attendees delivering an estimated contract value of ₹4,00,000 in a single day.",
+    "Very generous lead time allowing ample preparation, sourcing, and logistics planning in Goa.",
+    "Risk: High-throughput logistics required to feed 800 attendees efficiently during set workshop break windows.",
+    "Unclear: Exact venue in Goa and its on-site kitchen or staging facilities.",
+    "Unclear: Dietary distribution (veg/non-veg splits) and preferred service format (buffet vs. packed).",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Team workshop",
+    "where": "Goa, Goa, India",
+    "when": "2027-03-09",
+    "duration": "1 day(s)",
+    "deal value": "₹4.0L",
+    "commercial score": "8.5/10",
+    "feasibility": "9.5/10",
+    "announcement": "Fictional event notice: UrbanNest Properties 249 announced a team workshop scheduled for 2027-03-09 in Goa, Goa, India. The organizer requests quotations for lunch and afternoon refreshments."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\nEXECUTIVE CATERING PROPOSAL & SERVICE BLUEPRINT\n\nPrepared for: UrbanNest Properties 249\nEvent: Team Workshop\nDate: 2027-03-09\nLocation: Goa, Goa, India\nProjected Attendance: 800 Guests\nCatering Partner: Apex Corporate Catering Co.\n\n---\n\n1. EXECUTIVE OVERVIEW\nUrbanNest Properties 249 has scheduled a single-day corporate team workshop on March 9, 2027, in Goa for 800 attendees. To support your event agenda, Apex Corporate Catering Co. is pleased to present this tailored service outline covering your requested lunch service and afternoon refreshments. Our operational scope is engineered to provide seamless corporate meal delivery within your designated schedule.\n\n---\n\n2. TAILORED SERVICE SOLUTION\nLeveraging our confirmed operational capabilities, Apex Corporate Catering Co. proposes a structured corporate dining setup:\n- Mid-Day Corporate Lunch: A full corporate lunch served via structured buffet service, designed to handle large-scale corporate delegate groups smoothly.\n- Afternoon Refreshments / High Tea: Afternoon break beverage and refreshment service to recharge participants for the remaining workshop sessions.\n- Dietary Inclusivity: Comprehensive menu options covering vegetarian, non-vegetarian, vegan, and Jain requirements.\n\n---\n\n3. STRATEGIC LOGISTICS & OPERATIONAL FLOW\nWith 800 attendees participating in a dynamic workshop format, operational timing and crowd flow are critical:\n- High-Throughput Buffet Flow: Deployment of multi-sided, mirrored buffet stations to minimize queuing times during set workshop break windows.\n- Staged Replenishment: Controlled batch preparation and continuous replenishment to preserve food quality and presentation throughout the lunch window.\n- Refreshment Transition: Seamless transition from lunch clearing to afternoon tea and refreshments setup without disrupting ongoing workshop sessions.\n\n---\n\n4. COMMERCIAL FRAMEWORK\n- Event Scope: Full lunch and afternoon refreshment service for 800 attendees.\n- Unit & Package Pricing: [to be confirmed after requirements are validated]\n- Estimated Commercial Baseline: Deal value benchmarked at approximately [to be confirmed after requirements are validated], subject to finalized menu selection, service format, and venue logistics.\n- Taxes and Incidental Terms: [to be confirmed after requirements are validated]\n\n---\n\n5. OUTSTANDING INFORMATION CHECKLIST\nPrior to contract finalization and menu lock-in, the following operational details must be confirmed:\n- [confirm venue address and facilities] (including kitchen space, staging area, power, and water access)\n- [confirm dietary breakdown] (specific distribution across vegetarian, non-vegetarian, vegan, and Jain meals)\n- [confirm event timeline] (exact start and end times for lunch and afternoon refreshment windows)\n- [confirm guest count] (final head count lock-in date)",
+   "warnings": [
+    "Exact venue address and on-site staging/kitchen infrastructure are unconfirmed.",
+    "Pricing details are not available in the business profile; commercial placeholder used.",
+    "Dietary preference distribution across the 800 attendees is currently unknown.",
+    "Unsupported price claim detected: '₹4,00,000'. Replaced with placeholder."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ },
+ "LEAD-0061": {
+  "key": "de63f08d93e4",
+  "lead": {
+   "id": "LEAD-0061",
+   "company": "Nimbus DataWorks",
+   "title": "Project partners meeting",
+   "date": "16 Dec 2026",
+   "location": "Pune",
+   "people": 650,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "2-day project partners meeting, ~₹8.4L deal, score 8.3/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0061",
+   "reasoning": [
+    "This is a high-value opportunity catering to Nimbus DataWorks 061's 2-day project partners meeting in Pune for 650 attendees, valued at an estimated INR 845,000.0. Although catering is currently inferred from a planned networking reception, the scale, multi-day format, and 67-day lead time make it a highly viable prospect.",
+    "Substantial scale of 650 attendees over a 2-day duration represents an estimated deal value of INR 845,000.0",
+    "Generous preparation window of 67 days provides ample time for menu design, staffing, and logistics",
+    "Event is confirmed within the Pune service area with adequate capacity to deliver",
+    "Risk: Catering need is currently inferred, presenting a risk that food requirements may be limited solely to the networking reception rather than full-day service across both days",
+    "Risk: Managing high-volume service for 650 people across multiple days demands strict coordination to prevent service bottlenecks",
+    "Unclear: Exact meal scope and schedule (whether catering covers lunch, tea/coffee breaks, or only the networking reception)",
+    "Unclear: Specific venue in Pune and its available staging, refrigeration, and kitchen facilities",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Project partners meeting",
+    "where": "Pune, Maharashtra, India",
+    "when": "2026-12-16",
+    "duration": "2 day(s)",
+    "deal value": "₹8.4L",
+    "commercial score": "8.3/10",
+    "feasibility": "9.2/10",
+    "announcement": "Fictional company update: Nimbus DataWorks 061 is planning a project partners meeting in Pune, Maharashtra, India for 2026-12-16. A networking reception is planned; specific catering arrangements are not published."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\n## Executive Catering Pitch: Project partners meeting\n\n**Prepared by:** Apex Corporate Catering Co.\n**Prepared for:** Nimbus DataWorks 061\n**Event Overview:** Project partners meeting | 2026-12-16 | Pune, Maharashtra, India\n\n### 1. Executive Summary\nNimbus DataWorks 061's upcoming Project partners meeting represents an important gathering requiring reliable, seamless culinary execution. This is a high-value opportunity catering to Nimbus DataWorks 061's 2-day project partners meeting in Pune for 650 attendees, valued at an estimated [to be confirmed after requirements are validated]. Although catering is currently inferred from a planned networking reception, the scale, multi-day format, and 67-day lead time make it a highly viable prospect.\n\n### 2. Tailored Culinary Solution\nOur team proposes an integrated catering approach focusing strictly on our confirmed competencies: Corporate Lunch, Buffet Service, High Tea, Refreshments, Executive Dining. We deliver punctuality, refined presentation, and dietary inclusivity (Vegetarian, Non Vegetarian, Vegan, Jain).\n\n### 3. Key Planning Considerations\n- Flow & Timing: Designing the service window to align smoothly with the 650 confirmed attendees agenda.\n- Venue Logistics: Verifying staging access, loading times, and safety standards at Pune, Maharashtra, India.\n- Quality Control: Fresh preparation schedule synchronized with event meal breaks.\n\n### 4. Commercial Framework\n- Structure: Customized package quotation.\n- Pricing status: [to be confirmed after requirements are validated]\n\n### 5. Information Required for Final Proposal\n- Final confirmed attendee count: 650 confirmed attendees\n- Detailed service schedule and meal break times: [confirm service timeline]\n- Venue layout and staging facility access: [confirm venue address and facilities]\n\n### 6. Recommended Next Steps\nSchedule a brief operational alignment call with our corporate relations manager to review sample menus and finalize logistics.",
+   "warnings": [
+    "Unsupported price claim detected: 'INR 845,000.0'. Replaced with placeholder."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ },
+ "LEAD-0262": {
+  "key": "e28c2dd2cd93",
+  "lead": {
+   "id": "LEAD-0262",
+   "company": "Pinecone Digital",
+   "title": "Supplier day",
+   "date": "3 Jan 2027",
+   "location": "Bhubaneswar",
+   "people": 800,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "1-day supplier day, ~₹7.2L deal, score 8.5/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0262",
+   "reasoning": [
+    "Pinecone Digital 262's supplier day in Bhubaneswar is a high-value, fully qualified lead with explicit catering requirements for 800 attendees. Generating an estimated deal value of INR 7,20,000 across lunch and afternoon refreshments, it represents an attractive single-day commercial opportunity within our operational service area.",
+    "Explicit catering demand with the organizer actively seeking quotations for lunch and afternoon refreshments",
+    "High volume of 800 attendees yielding an estimated deal value of INR 7,20,000",
+    "Single-day event well within company service area and capacity limits with ample notice",
+    "Risk: Managing high-volume food service and crowd flow for 800 guests within a tight corporate event schedule",
+    "Risk: Competitive quoting process implied by the organizer's open request for quotations",
+    "Unclear: Specific venue in Bhubaneswar and its available kitchen or staging infrastructure",
+    "Unclear: Menu preferences, dietary restrictions, and preferred service style (buffet vs. plated/packaged)",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Supplier day",
+    "where": "Bhubaneswar, Odisha, India",
+    "when": "2027-01-03",
+    "duration": "1 day(s)",
+    "deal value": "₹7.2L",
+    "commercial score": "8.5/10",
+    "feasibility": "9.0/10",
+    "announcement": "Fictional announcement: Pinecone Digital 262 will host a supplier day in Bhubaneswar, Odisha, India on 2027-01-03. The organizer requests quotations for lunch and afternoon refreshments."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\nEXECUTIVE CATERING PROPOSAL: PINECONE DIGITAL 262 SUPPLIER DAY\n\n1. Executive Opportunity Overview\nApex Corporate Catering Co. is pleased to present this catering proposal to Pinecone Digital 262 for your upcoming Supplier Day in Bhubaneswar, Odisha, scheduled for January 3, 2027. We understand that seamless execution is critical for hosting 800 key partners and suppliers. In accordance with your request for quotations, this proposal outlines our comprehensive plan to deliver full corporate lunch and afternoon refreshment services tailored specifically to your event scale and schedule.\n\n2. Tailored Catering Solution\nLeveraging our verified operational capabilities for large-scale corporate gatherings, Apex Corporate Catering Co. proposes the following service package:\n- Corporate Lunch Service: A high-volume buffet service designed to provide an exceptional dining experience while maintaining steady throughput. Menu selections can incorporate comprehensive vegetarian, non-vegetarian, vegan, and jain options to accommodate all attendees.\n- Afternoon Refreshments & High Tea: Premium beverage service featuring tea, coffee, and curated light refreshments to revitalize participants during afternoon sessions.\n- Executive Dining Options: Optional executive dining arrangements for key leadership and VIP guests upon request.\n\n3. Operational & Strategic Planning Considerations\n- Guest Flow & Queue Management: Catering for 800 attendees requires optimized buffet lane distribution and strategic staging to ensure meal service completes smoothly without disrupting your business agenda.\n- Venue Integration: Efficient back-of-house staging and serving layouts will be aligned with [confirm venue address and facilities] once venue access and layout parameters are verified.\n- Dietary Management: Clear labeling and dedicated service stations for specialized dietary requirements (vegetarian, vegan, and jain).\n\n4. Commercial Framework\nBecause Apex Corporate Catering Co. customizes pricing based on exact menu selections, service staffing, and venue infrastructure requirements, commercial figures will be finalized upon joint review of event logistics:\n- Corporate Lunch (800 Guests): [to be confirmed after requirements are validated]\n- Afternoon Refreshments / High Tea (800 Guests): [to be confirmed after requirements are validated]\n- Service, Setup & Logistics: [to be confirmed after requirements are validated]\n- Total Estimated Investment: [to be confirmed after requirements are validated]\n\n5. Information Required Prior to Contract Finalization\nTo finalize menus, operational run-sheets, and a binding quotation, please confirm:\n- Exact event venue and on-site kitchen/staging facilities in Bhubaneswar\n- Master event schedule (designated windows for lunch and afternoon breaks)\n- Final dietary distribution among the 800 confirmed attendees\n- Loading dock and venue setup access windows on January 3, 2027",
+   "warnings": [
+    "Specific venue location and kitchen/staging infrastructure in Bhubaneswar are unconfirmed.",
+    "Standard pricing details are not available in the business profile; all financial terms must be validated internally before issuance."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ },
+ "LEAD-0038": {
+  "key": "cd867a09f260",
+  "lead": {
+   "id": "LEAD-0038",
+   "company": "Orbit Retail",
+   "title": "Dealer convention",
+   "date": "11 Jan 2027",
+   "location": "Thiruvananthapuram",
+   "people": 650,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "3-day dealer convention, ~₹14.6L deal, score 8.5/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0038",
+   "reasoning": [
+    "This is a high-value opportunity to cater a 3-day dealer convention for Orbit Retail 038 in Thiruvananthapuram with 650 attendees and an estimated deal value of INR 1,462,500. Catering requirements are explicit for breakfast, lunch, and networking snacks, providing a massive volume of meal services. With a 93-day lead time, the operational runway is well-suited for detailed planning and execution.",
+    "High commercial volume delivering multiple daily meal services (breakfast, lunch, snacks) across 3 full days for 650 guests.",
+    "Significant estimated contract value of INR 1,462,500.",
+    "Catering needs are explicitly confirmed rather than assumed.",
+    "Generous 93-day preparation window ensures ample time for procurement, staffing, and menu design.",
+    "Risk: Multi-day catering for 650 guests across three distinct daily services demands tight on-site management and consistent quality control.",
+    "Risk: Logistical strain on local service staff and transport over a sustained three-day run in Thiruvananthapuram.",
+    "Unclear: Specific venue selection and available on-site kitchen or plating facilities.",
+    "Unclear: Cuisine preferences and specific dietary requirements of the attendees.",
+    "Unclear: Whether evening dinner services will be added to the scope.",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Dealer convention",
+    "where": "Thiruvananthapuram, Kerala, India",
+    "when": "2027-01-11",
+    "duration": "3 day(s)",
+    "deal value": "₹14.6L",
+    "commercial score": "8.5/10",
+    "feasibility": "9.0/10",
+    "announcement": "Fictional announcement: Orbit Retail 038 will host a dealer convention in Thiruvananthapuram, Kerala, India on 2027-01-11. Breakfast, lunch, and networking snacks are listed in the event requirements."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\n## Executive Catering Pitch: Dealer convention\n\n**Prepared by:** Apex Corporate Catering Co.\n**Prepared for:** Orbit Retail 038\n**Event Overview:** Dealer convention | 2027-01-11 | Thiruvananthapuram, Kerala, India\n\n### 1. Executive Summary\nOrbit Retail 038's upcoming Dealer convention represents an important gathering requiring reliable, seamless culinary execution. This is a high-value opportunity to cater a 3-day dealer convention for Orbit Retail 038 in Thiruvananthapuram with 650 attendees and an estimated deal value of [to be confirmed after requirements are validated]. Catering requirements are explicit for breakfast, lunch, and networking snacks, providing a massive volume of meal services. With a 93-day lead time, the operational runway is well-suited for detailed planning and execution.\n\n### 2. Tailored Culinary Solution\nOur team proposes an integrated catering approach focusing strictly on our confirmed competencies: Corporate Lunch, Buffet Service, High Tea, Refreshments, Executive Dining. We deliver punctuality, refined presentation, and dietary inclusivity (Vegetarian, Non Vegetarian, Vegan, Jain).\n\n### 3. Key Planning Considerations\n- Flow & Timing: Designing the service window to align smoothly with the 650 confirmed attendees agenda.\n- Venue Logistics: Verifying staging access, loading times, and safety standards at Thiruvananthapuram, Kerala, India.\n- Quality Control: Fresh preparation schedule synchronized with event meal breaks.\n\n### 4. Commercial Framework\n- Structure: Customized package quotation.\n- Pricing status: [to be confirmed after requirements are validated]\n\n### 5. Information Required for Final Proposal\n- Final confirmed attendee count: 650 confirmed attendees\n- Detailed service schedule and meal break times: [confirm service timeline]\n- Venue layout and staging facility access: [confirm venue address and facilities]\n\n### 6. Recommended Next Steps\nSchedule a brief operational alignment call with our corporate relations manager to review sample menus and finalize logistics.",
+   "warnings": [
+    "Unsupported price claim detected: 'INR 1,462,500'. Replaced with placeholder."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ },
+ "LEAD-0188": {
+  "key": "4ed30a0ce066",
+  "lead": {
+   "id": "LEAD-0188",
+   "company": "Ironwood Infrastructure",
+   "title": "Customer summit",
+   "date": "16 Jan 2027",
+   "location": "Coimbatore",
+   "people": 650,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "1-day customer summit, ~₹5.8L deal, score 8.5/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0188",
+   "reasoning": [
+    "This is a high-value, fully qualified lead for Ironwood Infrastructure 188's 650-attendee customer summit in Coimbatore with an estimated deal value of ₹5,85,000. The requirement is explicit for lunch and two coffee breaks, supported by an ample 98-day planning runway. Given the scale and strategic profile of a customer summit, this represents an attractive corporate catering opportunity.",
+    "Explicit catering demand confirmed for lunch and two coffee breaks for 650 attendees",
+    "High deal value estimated at ₹5,85,000 for a single-day event",
+    "Generous preparation window of 98 days ensures smooth logistical planning",
+    "Located within Coimbatore service area and within operating capacity limits",
+    "Risk: Simultaneous lunch service for 650 attendees creates operational pressure on buffet lines and staging",
+    "Risk: Potential venue constraints regarding outside catering access or prep space",
+    "Unclear: Exact venue selection in Coimbatore and available on-site pantry or kitchen infrastructure",
+    "Unclear: Specific menu preferences, dietary splits, and preferred service style (buffet vs. plated)",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Customer summit",
+    "where": "Coimbatore, Tamil Nadu, India",
+    "when": "2027-01-16",
+    "duration": "1 day(s)",
+    "deal value": "₹5.8L",
+    "commercial score": "8.5/10",
+    "feasibility": "9.2/10",
+    "announcement": "Fictional company update: Ironwood Infrastructure 188 is planning a customer summit in Coimbatore, Tamil Nadu, India for 2027-01-16. The announcement confirms lunch and two coffee breaks."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\n## Executive Catering Pitch: Customer summit\n\n**Prepared by:** Apex Corporate Catering Co.\n**Prepared for:** Ironwood Infrastructure 188\n**Event Overview:** Customer summit | 2027-01-16 | Coimbatore, Tamil Nadu, India\n\n### 1. Executive Summary\nIronwood Infrastructure 188's upcoming Customer summit represents an important gathering requiring reliable, seamless culinary execution. This is a high-value, fully qualified lead for Ironwood Infrastructure 188's 650-attendee customer summit in Coimbatore with an estimated deal value of [to be confirmed after requirements are validated]. The requirement is explicit for lunch and two coffee breaks, supported by an ample 98-day planning runway. Given the scale and strategic profile of a customer summit, this represents an attractive corporate catering opportunity.\n\n### 2. Tailored Culinary Solution\nOur team proposes an integrated catering approach focusing strictly on our confirmed competencies: Corporate Lunch, Buffet Service, High Tea, Refreshments, Executive Dining. We deliver punctuality, refined presentation, and dietary inclusivity (Vegetarian, Non Vegetarian, Vegan, Jain).\n\n### 3. Key Planning Considerations\n- Flow & Timing: Designing the service window to align smoothly with the 650 confirmed attendees agenda.\n- Venue Logistics: Verifying staging access, loading times, and safety standards at Coimbatore, Tamil Nadu, India.\n- Quality Control: Fresh preparation schedule synchronized with event meal breaks.\n\n### 4. Commercial Framework\n- Structure: Customized package quotation.\n- Pricing status: [to be confirmed after requirements are validated]\n\n### 5. Information Required for Final Proposal\n- Final confirmed attendee count: 650 confirmed attendees\n- Detailed service schedule and meal break times: [confirm service timeline]\n- Venue layout and staging facility access: [confirm venue address and facilities]\n\n### 6. Recommended Next Steps\nSchedule a brief operational alignment call with our corporate relations manager to review sample menus and finalize logistics.",
+   "warnings": [
+    "Unsupported price claim detected: '₹5,85,000'. Replaced with placeholder."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ },
+ "LEAD-0084": {
+  "key": "1fa7185ae1a3",
+  "lead": {
+   "id": "LEAD-0084",
+   "company": "TerraNova Mobility",
+   "title": "Corporate training",
+   "date": "15 Feb 2027",
+   "location": "Lucknow",
+   "people": 650,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "2-day corporate training, ~₹8.4L deal, score 8.5/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0084",
+   "reasoning": [
+    "This is a high-value corporate training lead in Lucknow covering 650 attendees across two days with an estimated value of INR 845,000. The announcement explicitly specifies breakfast, lunch, and networking snacks, providing substantial multi-meal order volume. With 128 days of advance notice, this is a highly feasible and lucrative opportunity.",
+    "Explicit catering requirement confirmed for breakfast, lunch, and networking snacks across both days",
+    "Large order volume with 650 attendees over a 2-day duration generating an estimated deal value of INR 845,000",
+    "Substantial lead time of 128 days allows thorough staffing and supply-chain preparation",
+    "Event is confirmed to be within our Lucknow service area and within capacity limits",
+    "Risk: High-throughput logistics needed to serve 650 guests three distinct meal services per day without delaying training schedules",
+    "Unclear: Exact venue details and available kitchen or staging infrastructure in Lucknow",
+    "Unclear: Specific dietary requirements and preferred service formats (e.g., buffet vs. plated/boxed snacks)",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Corporate training",
+    "where": "Lucknow, Uttar Pradesh, India",
+    "when": "2027-02-15",
+    "duration": "2 day(s)",
+    "deal value": "₹8.4L",
+    "commercial score": "8.5/10",
+    "feasibility": "9.2/10",
+    "announcement": "Fictional event notice: TerraNova Mobility 084 announced a corporate training scheduled for 2027-02-15 in Lucknow, Uttar Pradesh, India. Breakfast, lunch, and networking snacks are listed in the event requirements."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\n## Executive Catering Pitch: Corporate training\n\n**Prepared by:** Apex Corporate Catering Co.\n**Prepared for:** TerraNova Mobility 084\n**Event Overview:** Corporate training | 2027-02-15 | Lucknow, Uttar Pradesh, India\n\n### 1. Executive Summary\nTerraNova Mobility 084's upcoming Corporate training represents an important gathering requiring reliable, seamless culinary execution. This is a high-value corporate training lead in Lucknow covering 650 attendees across two days with an estimated value of [to be confirmed after requirements are validated]. The announcement explicitly specifies breakfast, lunch, and networking snacks, providing substantial multi-meal order volume. With 128 days of advance notice, this is a highly feasible and lucrative opportunity.\n\n### 2. Tailored Culinary Solution\nOur team proposes an integrated catering approach focusing strictly on our confirmed competencies: Corporate Lunch, Buffet Service, High Tea, Refreshments, Executive Dining. We deliver punctuality, refined presentation, and dietary inclusivity (Vegetarian, Non Vegetarian, Vegan, Jain).\n\n### 3. Key Planning Considerations\n- Flow & Timing: Designing the service window to align smoothly with the 650 confirmed attendees agenda.\n- Venue Logistics: Verifying staging access, loading times, and safety standards at Lucknow, Uttar Pradesh, India.\n- Quality Control: Fresh preparation schedule synchronized with event meal breaks.\n\n### 4. Commercial Framework\n- Structure: Customized package quotation.\n- Pricing status: [to be confirmed after requirements are validated]\n\n### 5. Information Required for Final Proposal\n- Final confirmed attendee count: 650 confirmed attendees\n- Detailed service schedule and meal break times: [confirm service timeline]\n- Venue layout and staging facility access: [confirm venue address and facilities]\n\n### 6. Recommended Next Steps\nSchedule a brief operational alignment call with our corporate relations manager to review sample menus and finalize logistics.",
+   "warnings": [
+    "Unsupported price claim detected: 'INR 845,000'. Replaced with placeholder."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ },
+ "LEAD-0238": {
+  "key": "d932e946fd9e",
+  "lead": {
+   "id": "LEAD-0238",
+   "company": "Pioneer Fintech",
+   "title": "Technology summit",
+   "date": "24 Mar 2027",
+   "location": "Thiruvananthapuram",
+   "people": 650,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "3-day technology summit, ~₹12.7L deal, score 8.7/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0238",
+   "reasoning": [
+    "This is a high-value, fully qualified lead for Pioneer Fintech 238's 3-day technology summit in Thiruvananthapuram with 650 attendees. Catering demand is explicit for breakfast, lunch, and networking snacks across all three days, representing substantial volume and an estimated value of ₹12,67,500.",
+    "Explicit catering requirement confirmed for breakfast, lunch, and networking snacks across 3 days.",
+    "Substantial volume generating roughly 5,850 total meal services (650 guests x 3 meals x 3 days).",
+    "Generous lead time (165 days notice) provides ample runway for operational planning and procurement.",
+    "Risk: Multi-day logistics requiring sustained staffing and food quality management for 650 people per day across three distinct meal slots.",
+    "Risk: Potential menu fatigue across a continuous 3-day conference requiring diverse menu planning.",
+    "Unclear: Specific venue location in Thiruvananthapuram and whether on-site kitchen or staging facilities are available.",
+    "Unclear: Exact daily schedule for meal service and dietary/cuisine preferences of attendees.",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Technology summit",
+    "where": "Thiruvananthapuram, Kerala, India",
+    "when": "2027-03-24",
+    "duration": "3 day(s)",
+    "deal value": "₹12.7L",
+    "commercial score": "8.7/10",
+    "feasibility": "9.2/10",
+    "announcement": "Fictional announcement: Pioneer Fintech 238 will host a technology summit in Thiruvananthapuram, Kerala, India on 2027-03-24. Breakfast, lunch, and networking snacks are listed in the event requirements."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\n## Executive Catering Pitch: Technology summit\n\n**Prepared by:** Apex Corporate Catering Co.\n**Prepared for:** Pioneer Fintech 238\n**Event Overview:** Technology summit | 2027-03-24 | Thiruvananthapuram, Kerala, India\n\n### 1. Executive Summary\nPioneer Fintech 238's upcoming Technology summit represents an important gathering requiring reliable, seamless culinary execution. This is a high-value, fully qualified lead for Pioneer Fintech 238's 3-day technology summit in Thiruvananthapuram with 650 attendees. Catering demand is explicit for breakfast, lunch, and networking snacks across all three days, representing substantial volume and an estimated value of [to be confirmed after requirements are validated].\n\n### 2. Tailored Culinary Solution\nOur team proposes an integrated catering approach focusing strictly on our confirmed competencies: Corporate Lunch, Buffet Service, High Tea, Refreshments, Executive Dining. We deliver punctuality, refined presentation, and dietary inclusivity (Vegetarian, Non Vegetarian, Vegan, Jain).\n\n### 3. Key Planning Considerations\n- Flow & Timing: Designing the service window to align smoothly with the 650 confirmed attendees agenda.\n- Venue Logistics: Verifying staging access, loading times, and safety standards at Thiruvananthapuram, Kerala, India.\n- Quality Control: Fresh preparation schedule synchronized with event meal breaks.\n\n### 4. Commercial Framework\n- Structure: Customized package quotation.\n- Pricing status: [to be confirmed after requirements are validated]\n\n### 5. Information Required for Final Proposal\n- Final confirmed attendee count: 650 confirmed attendees\n- Detailed service schedule and meal break times: [confirm service timeline]\n- Venue layout and staging facility access: [confirm venue address and facilities]\n\n### 6. Recommended Next Steps\nSchedule a brief operational alignment call with our corporate relations manager to review sample menus and finalize logistics.",
+   "warnings": [
+    "Unsupported price claim detected: '₹12,67,500'. Replaced with placeholder."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ },
+ "LEAD-0242": {
+  "key": "39d01e2c6411",
+  "lead": {
+   "id": "LEAD-0242",
+   "company": "Orbit Retail",
+   "title": "Dealer convention",
+   "date": "16 Dec 2026",
+   "location": "Kolkata",
+   "people": 650,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "3-day dealer convention, ~₹14.6L deal, score 8.5/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0242",
+   "reasoning": [
+    "This is a high-value commercial opportunity involving a 3-day dealer convention for 650 attendees hosted by Orbit Retail 242 in Kolkata. While the catering requirement is currently inferred rather than explicit, the multi-day format and scale represent substantial revenue potential of approximately INR 1,462,500.",
+    "High volume requirement of 650 attendees over a 3-day duration, driving an estimated deal value of INR 1,462,500.",
+    "Fully within operational capacity and service area in Kolkata with an ample 67-day notice period.",
+    "Risk: Catering need is purely inferred from the event type, as the announcement does not explicitly confirm food service.",
+    "Risk: Multi-day logistics for 650 guests demand sustained multi-shift staffing and tight supply chain coordination.",
+    "Unclear: Specific venue selection in Kolkata and whether external catering is permitted or tied to an in-house hotel caterer.",
+    "Unclear: Exact meal scope and schedules across the 3 days (e.g., lunches, high tea, dinners).",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Dealer convention",
+    "where": "Kolkata, West Bengal, India",
+    "when": "2026-12-16",
+    "duration": "3 day(s)",
+    "deal value": "₹14.6L",
+    "commercial score": "8.5/10",
+    "feasibility": "9.0/10",
+    "announcement": "Fictional announcement: Orbit Retail 242 will host a dealer convention in Kolkata, West Bengal, India on 2026-12-16. The announcement describes a large in-person gathering but does not mention food service."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\n## Executive Catering Pitch: Dealer convention\n\n**Prepared by:** Apex Corporate Catering Co.\n**Prepared for:** Orbit Retail 242\n**Event Overview:** Dealer convention | 2026-12-16 | Kolkata, West Bengal, India\n\n### 1. Executive Summary\nOrbit Retail 242's upcoming Dealer convention represents an important gathering requiring reliable, seamless culinary execution. This is a high-value commercial opportunity involving a 3-day dealer convention for 650 attendees hosted by Orbit Retail 242 in Kolkata. While the catering requirement is currently inferred rather than explicit, the multi-day format and scale represent substantial revenue potential of approximately [to be confirmed after requirements are validated].\n\n### 2. Tailored Culinary Solution\nOur team proposes an integrated catering approach focusing strictly on our confirmed competencies: Corporate Lunch, Buffet Service, High Tea, Refreshments, Executive Dining. We deliver punctuality, refined presentation, and dietary inclusivity (Vegetarian, Non Vegetarian, Vegan, Jain).\n\n### 3. Key Planning Considerations\n- Flow & Timing: Designing the service window to align smoothly with the 650 confirmed attendees agenda.\n- Venue Logistics: Verifying staging access, loading times, and safety standards at Kolkata, West Bengal, India.\n- Quality Control: Fresh preparation schedule synchronized with event meal breaks.\n\n### 4. Commercial Framework\n- Structure: Customized package quotation.\n- Pricing status: [to be confirmed after requirements are validated]\n\n### 5. Information Required for Final Proposal\n- Final confirmed attendee count: 650 confirmed attendees\n- Detailed service schedule and meal break times: [confirm service timeline]\n- Venue layout and staging facility access: [confirm venue address and facilities]\n\n### 6. Recommended Next Steps\nSchedule a brief operational alignment call with our corporate relations manager to review sample menus and finalize logistics.",
+   "warnings": [
+    "Unsupported price claim detected: 'INR 1,462,500'. Replaced with placeholder."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ },
+ "LEAD-0292": {
+  "key": "92819b7e2418",
+  "lead": {
+   "id": "LEAD-0292",
+   "company": "Meridian Analytics",
+   "title": "Partner conference",
+   "date": "27 Nov 2026",
+   "location": "Thiruvananthapuram",
+   "people": 650,
+   "verdict": "high",
+   "tier": "high_effort_pitch",
+   "why": "1-day partner conference, ~₹4.9L deal, score 8.3/10",
+   "duplicate_of": null,
+   "source": "https://example.com/synthetic/lead-0292",
+   "reasoning": [
+    "Meridian Analytics 292 is hosting a full-day partner conference for 650 attendees in Thiruvananthapuram with an estimated deal value of INR 487,500.0. While catering is inferred from the full-day schedule rather than explicitly stated, the large guest count and 48-day preparation window make it a high-value commercial opportunity.",
+    "High guest count of 650 attendees creates a substantial single-day deal value of INR 487,500.0.",
+    "Full-day partner conference agenda indicates the need for multi-session catering such as lunch and refreshment breaks.",
+    "Fully qualified on service area in Thiruvananthapuram, company capacity limits, and a comfortable 48-day notice period.",
+    "Risk: Catering requirements are not explicitly specified in the announcement, meaning the host venue may already have an exclusive in-house caterer.",
+    "Risk: Serving 650 attendees within conference break windows requires tight logistical coordination.",
+    "Unclear: Specific venue selection and whether outside catering is permitted.",
+    "Unclear: Exact meal types, service formats, and beverage schedules required across the full-day agenda.",
+    "Next: Prepare customized corporate menu proposal with chef notes.",
+    "Next: Schedule discovery call with event manager."
+   ],
+   "dossier": {
+    "event": "Partner conference",
+    "where": "Thiruvananthapuram, Kerala, India",
+    "when": "2026-11-27",
+    "duration": "1 day(s)",
+    "deal value": "₹4.9L",
+    "commercial score": "8.3/10",
+    "feasibility": "9.2/10",
+    "announcement": "Fictional company update: Meridian Analytics 292 is planning a partner conference in Thiruvananthapuram, Kerala, India for 2026-11-27. The event has a full-day agenda, but catering requirements are not specified."
+   },
+   "proposal": "**Draft for human review — not sent. Verify event details, recipient information, business capabilities, pricing, and availability before use.**\n\n## Executive Catering Pitch: Partner conference\n\n**Prepared by:** Apex Corporate Catering Co.\n**Prepared for:** Meridian Analytics 292\n**Event Overview:** Partner conference | 2026-11-27 | Thiruvananthapuram, Kerala, India\n\n### 1. Executive Summary\nMeridian Analytics 292's upcoming Partner conference represents an important gathering requiring reliable, seamless culinary execution. Meridian Analytics 292 is hosting a full-day partner conference for 650 attendees in Thiruvananthapuram with an estimated deal value of [to be confirmed after requirements are validated]. While catering is inferred from the full-day schedule rather than explicitly stated, the large guest count and 48-day preparation window make it a high-value commercial opportunity.\n\n### 2. Tailored Culinary Solution\nOur team proposes an integrated catering approach focusing strictly on our confirmed competencies: Corporate Lunch, Buffet Service, High Tea, Refreshments, Executive Dining. We deliver punctuality, refined presentation, and dietary inclusivity (Vegetarian, Non Vegetarian, Vegan, Jain).\n\n### 3. Key Planning Considerations\n- Flow & Timing: Designing the service window to align smoothly with the 650 confirmed attendees agenda.\n- Venue Logistics: Verifying staging access, loading times, and safety standards at Thiruvananthapuram, Kerala, India.\n- Quality Control: Fresh preparation schedule synchronized with event meal breaks.\n\n### 4. Commercial Framework\n- Structure: Customized package quotation.\n- Pricing status: [to be confirmed after requirements are validated]\n\n### 5. Information Required for Final Proposal\n- Final confirmed attendee count: 650 confirmed attendees\n- Detailed service schedule and meal break times: [confirm service timeline]\n- Venue layout and staging facility access: [confirm venue address and facilities]\n\n### 6. Recommended Next Steps\nSchedule a brief operational alignment call with our corporate relations manager to review sample menus and finalize logistics.",
+   "warnings": [
+    "Unsupported price claim detected: 'INR 487,500.0'. Replaced with placeholder."
+   ],
+   "ai": [
+    "reasoning",
+    "proposal"
+   ]
+  }
+ }
+}
