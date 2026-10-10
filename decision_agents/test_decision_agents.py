@@ -9,7 +9,7 @@ and correct pursuit tier selection.
 import unittest
 from datetime import date, timedelta
 
-from schemas import (
+from decision_agents.schemas import (
     BusinessProfile,
     LeadAnalysis,
     EvidenceFact,
@@ -17,9 +17,9 @@ from schemas import (
     QualificationStatus,
     PursuitTier,
 )
-from qualification_agent import qualify
-from reasoning_agent import evaluate
-from strategy_agent import choose_strategy
+from decision_agents.qualification_agent import qualify
+from decision_agents.reasoning_agent import evaluate
+from decision_agents.strategy_agent import choose_strategy
 
 
 class TestDecisionAgents(unittest.TestCase):

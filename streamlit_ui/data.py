@@ -1,41 +1,53 @@
 """Where the UI gets its data.
 
-Two ways to plug in the backend:
-  1. HTTP: set CATERING_API_URL (e.g. http://localhost:8000). The UI calls
-       GET  {url}/api/verdicts   -> list of announcements (or {"announcements": [...]})
-       POST {url}/api/analyze    -> same shape, after running the agents
-  2. Direct Python: replace the bodies of load_verdicts() / run_analysis()
-     with calls to the pipeline functions.
-If neither works, the UI falls back to mock data.
+Default: runs the real pipeline (../pipeline.py) on the dataset CSV in-process.
+Optional: set CATERING_API_URL to fetch from an HTTP backend instead.
+If both fail, falls back to mock data (the UI shows a "mock data" badge).
 """
 import os
-
-import requests
+import sys
+import traceback
+from pathlib import Path
 
 from mock_data import MOCK_ANNOUNCEMENTS
 
-API_URL = os.getenv("CATERING_API_URL", "http://localhost:8000").rstrip("/")
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+API_URL = os.getenv("CATERING_API_URL", "").rstrip("/")
 
 
 def _unwrap(payload):
     return payload if isinstance(payload, list) else payload.get("announcements", [])
 
 
+def _from_pipeline():
+    from pipeline import run_pipeline
+    return run_pipeline()
+
+
+def _from_api(method="get"):
+    import requests
+    path = "/api/verdicts" if method == "get" else "/api/analyze"
+    r = requests.request(method, f"{API_URL}{path}", timeout=300)
+    r.raise_for_status()
+    return _unwrap(r.json())
+
+
 def load_verdicts():
     """Returns (announcements, using_mock)."""
     try:
-        r = requests.get(f"{API_URL}/api/verdicts", timeout=3)
-        r.raise_for_status()
-        return _unwrap(r.json()), False
+        return (_from_api() if API_URL else _from_pipeline()), False
     except Exception:
+        traceback.print_exc()
         return MOCK_ANNOUNCEMENTS, True
 
 
 def run_analysis():
-    """Triggers the agent pipeline. Returns (announcements, using_mock)."""
+    """Re-runs the agents. Returns (announcements, using_mock)."""
     try:
-        r = requests.post(f"{API_URL}/api/analyze", timeout=300)
-        r.raise_for_status()
-        return _unwrap(r.json()), False
+        return (_from_api("post") if API_URL else _from_pipeline()), False
     except Exception:
+        traceback.print_exc()
         return MOCK_ANNOUNCEMENTS, True

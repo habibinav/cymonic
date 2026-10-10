@@ -148,6 +148,13 @@
   .dossier span { color: var(--muted); text-transform: capitalize; }
   .proposal { position: relative; white-space: pre-wrap; background: #0f0f0f; border: 1px solid var(--border); border-radius: 8px;
     padding: 16px; line-height: 1.6; font-size: 14px; color: #e0e0e0; }
+  .proposal .md { white-space: normal; }
+  .md b { font-weight: 500; color: #fff; }
+  .md-h1 { font-size: 18px; color: #fff; margin: 6px 0 4px; }
+  .md-h2 { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--c); margin: 14px 0 4px; }
+  .md-li { padding-left: 16px; position: relative; }
+  .md-li::before { content: "•"; position: absolute; left: 2px; color: var(--c); }
+  .md-gap { height: 8px; }
   .copy { position: absolute; top: 10px; right: 10px; font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 4px; background: #fff; color: #000; }
   .muted { color: var(--muted); font-size: 14px; }
   .linkish { color: var(--c); font-weight: 500; font-size: 14px; padding: 0; }
@@ -215,6 +222,17 @@ const inVerdict = k => sortLeads(DATA.filter(a => a.verdict === k));
 const matches = (a, q) => !q || ['company', 'title', 'why', 'location'].some(f => (a[f] || '').toLowerCase().includes(q));
 
 let current = null;   // open category key
+
+// tiny markdown: ## headings, - bullets, **bold**
+function md(text) {
+  return String(text || '').split('\n').map(line => {
+    let l = esc(line).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+    if (/^#{1,2}\s/.test(line)) return `<div class="md-h1">${l.replace(/^#+\s*/, '')}</div>`;
+    if (/^#{3,}\s/.test(line)) return `<div class="md-h2">${l.replace(/^#+\s*/, '')}</div>`;
+    if (/^\s*[-•*]\s/.test(line)) return `<div class="md-li">${l.replace(/^\s*[-•*]\s*/, '')}</div>`;
+    return line.trim() ? `<div>${l}</div>` : '<div class="md-gap"></div>';
+  }).join('');
+}
 
 function whyText(a) {
   const o = byId[a.duplicate_of];
@@ -371,7 +389,7 @@ function openLead(id) {
       </div>
       <div class="full">
         <div class="h">Proposal</div>
-        ${a.proposal ? `<div class="proposal"><button class="copy" data-copy="${a.id}">Copy</button>${esc(a.proposal)}</div>`
+        ${a.proposal ? `<div class="proposal"><button class="copy" data-copy="${a.id}">Copy</button><div class="md">${md(a.proposal)}</div></div>`
                      : `<div class="muted">${a.verdict === 'skip' ? 'Skipped — no proposal needed.' : 'No proposal drafted yet.'}</div>`}
       </div>
     </div>`;
