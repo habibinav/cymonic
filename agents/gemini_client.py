@@ -7,6 +7,7 @@ so callers can fall back to the rule-based / template versions and the app never
 Setup:
     pip install -U google-genai
     put GEMINI_API_KEY=... in a .env file at the project root (see .env.example)
+Check it:  python3 agents/gemini_client.py
 """
 from __future__ import annotations
 
@@ -21,7 +22,8 @@ logger = logging.getLogger(__name__)
 try:  # load .env from the project root if python-dotenv is installed
     from dotenv import load_dotenv
 
-    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+    # .env lives in the project root (one level above agents/)
+    load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"))
 except ImportError:
     pass
 
@@ -123,6 +125,6 @@ def generate_json(system: str, user: str) -> dict | None:
 
 
 if __name__ == "__main__":
-    # Quick check:  python gemini_client.py
+    # Quick check:  python3 agents/gemini_client.py
     print("Model:", MODEL, "| key set:", bool(api_key()), "| enabled:", is_enabled())
     print(generate("You are terse.", "Reply with exactly: Gemini is working") or "No reply — check the key / package / model name.")

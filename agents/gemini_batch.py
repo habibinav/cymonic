@@ -2,7 +2,7 @@
 
 One Gemini call handles a whole batch of leads (default 8) and returns, for each lead:
 a one-line headline, the reasoning, scores and a tailored draft. Several batches run in
-parallel, so ~470 leads take a few minutes once — then results are cached in ai_cache.json.
+parallel. The pipeline caches results in data/ai_cache.json.
 
 The hard rules (service area, guest limits, notice period) are applied BEFORE this step by
 Member 1's qualification agent; out-of-policy leads are never sent to Gemini.

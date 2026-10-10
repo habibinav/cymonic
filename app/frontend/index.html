@@ -27,7 +27,7 @@
 
   /* ---------- nav ---------- */
   .nav { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between;
-    gap: 16px; padding: 18px 430px 18px 48px; background: linear-gradient(to bottom, rgba(13,13,13,.95), rgba(13,13,13,0)); }
+    gap: 16px; padding: 18px 270px 18px 48px; background: linear-gradient(to bottom, rgba(13,13,13,.95), rgba(13,13,13,0)); }
   .logo { font-weight: 500; letter-spacing: .2em; font-size: 20px; color: #e5484d; text-transform: uppercase; }
   .logo span { color: var(--text); font-weight: 500; letter-spacing: .02em; text-transform: none; font-size: 14px; margin-left: 12px; opacity: .7; }
   .search { background: rgba(0,0,0,.6); border: 1px solid #444; color: var(--text); border-radius: 6px;
@@ -97,6 +97,16 @@
   .aibadge { position: absolute; right: 12px; top: 12px; font-size: 11px; padding: 2px 8px; border-radius: 999px;
     background: rgba(0,0,0,.45); color: #c9b6ff; border: 1px solid rgba(201,182,255,.35); }
   .ai-note { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; color: #c9b6ff; }
+  .gem-btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 9px 18px; border-radius: 999px;
+    font-size: 14px; color: #e9e1ff; background: linear-gradient(90deg, rgba(124,92,255,.35), rgba(66,133,244,.35));
+    border: 1px solid rgba(201,182,255,.45); transition: transform .15s, background .2s; }
+  .gem-btn:hover:not([disabled]) { transform: scale(1.03); background: linear-gradient(90deg, rgba(124,92,255,.55), rgba(66,133,244,.55)); }
+  .gem-btn.sm { margin: 0 0 14px; padding: 6px 14px; font-size: 13px; }
+  .gem-btn.busy { cursor: progress; opacity: .85; }
+  .gem-done { margin-top: 16px; font-size: 13px; color: #c9b6ff; }
+  .spin { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%;
+    animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
   .poster h3 { margin: 0; font-size: 21px; font-weight: 500; line-height: 1.1; position: relative; }
   .lbody { padding: 12px 16px 16px; }
   .lmeta { display: flex; gap: 10px; font-size: 13px; color: var(--muted); margin-bottom: 8px; flex-wrap: wrap; }
@@ -231,9 +241,13 @@
   <div class="scrim" id="scrim"><div class="modal" id="modal"></div></div>
 
 <script>
-const DATA = (__DATA__).map(a => ({ ...a, company: String(a.company || 'Unknown').replace(/\s+\d+$/, '') }));
-const USING_MOCK = __MOCK__;
-const OPEN_ON_LOAD = __OPEN__;
+let DATA = [];          // set by Streamlit on every render
+let byId = {};
+let USING_MOCK = false;
+let AI_ON = false;      // Gemini key present
+let pending = null;     // Gemini request in flight: {nonce, label}
+let lastOpenLead = null;
+let started = false;
 
 const VERDICTS = [
   { key: 'high',     label: 'High-effort pitch', blurb: 'Big deals worth a custom pitch' },
@@ -242,7 +256,6 @@ const VERDICTS = [
   { key: 'skip',     label: 'Skip',              blurb: 'Not worth chasing' },
 ];
 const V = Object.fromEntries(VERDICTS.map(v => [v.key, v]));
-const byId = Object.fromEntries(DATA.map(a => [a.id, a]));
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sortLeads = arr => [...arr].sort((a, b) => (b.people || 0) - (a.people || 0));
@@ -346,6 +359,7 @@ function folderCard(g, key, i) {
         <div class="poster">
           <div class="initial">${esc(g.company[0])}</div>
           <div class="ftag">${FOLDER_ICON} ${g.leads.length} events</div>
+          ${g.leads.every(a => a.ai && a.ai.length) ? '<div class="aibadge">✨ Gemini</div>' : ''}
           <h3>${esc(g.company)}</h3>
         </div>
         <div class="lbody">
@@ -373,7 +387,8 @@ function renderCategory(key, q = '') {
     hero.innerHTML = `
       <div class="crumbs"><button data-home>Verdicts</button>›<button data-unfolder>${v.label}</button>›<span>${esc(folder)}</span></div>
       <div class="cat-title"><h1>${esc(folder)}</h1><span class="n">${all.length}</span></div>
-      <p>${all.length} events in ${v.label.toLowerCase()} · ${all.reduce((s, a) => s + (a.people || 0), 0)} people total</p>`;
+      <p>${all.length} events in ${v.label.toLowerCase()} · ${all.reduce((s, a) => s + (a.people || 0), 0)} people total</p>
+      ${geminiButton(all, `${esc(folder)}'s ${all.length > 1 ? 'events' : 'event'}`)}`;
     $('#cat-grid').innerHTML = leads.length
       ? leads.map((a, i) => leadCard(a, i, '', true)).join('')
       : '<div class="empty">Nothing here for that search.</div>';
@@ -384,6 +399,7 @@ function renderCategory(key, q = '') {
     <button class="back" data-home>‹ Back to verdicts</button>
     <div class="cat-title"><h1>${v.label}</h1><span class="n">${list.length}</span></div>
     <p>${v.blurb}</p>
+    ${geminiButton(list, v.label)}
     <div class="tabs">${VERDICTS.map(o =>
       `<button class="tab tone-${o.key} ${o.key === key ? 'active' : ''}" data-switch="${o.key}">${o.label} · ${inVerdict(o.key).length}</button>`).join('')}
     </div>`;
@@ -393,6 +409,28 @@ function renderCategory(key, q = '') {
         ? folderCard(g, key, i)
         : leadCard(g.leads[0], i, '')).join('')
     : `<div class="empty">Nothing here${q ? ' for that search' : ''}.</div>`;
+}
+
+/* ---------- Gemini (on demand) ---------- */
+const canAnalyze = a => a.verdict !== 'skip' && !(a.ai && a.ai.length);
+
+function geminiButton(leads, label) {
+  if (!AI_ON) return '';
+  const todo = leads.filter(canAnalyze);
+  if (pending) return `<button class="gem-btn busy" disabled><span class="spin"></span> Gemini is analysing ${esc(pending.label)}…</button>`;
+  if (!todo.length) {
+    const done = leads.some(a => a.ai && a.ai.length);
+    return done ? '<div class="gem-done">✨ Analysed by Gemini</div>' : '';
+  }
+  const ids = todo.map(a => a.id).join(',');
+  return `<button class="gem-btn" data-analyze="${ids}" data-label="${esc(label)}">✨ Analyse ${todo.length} ${todo.length === 1 ? 'lead' : 'leads'} with Gemini</button>`;
+}
+
+function requestAnalysis(ids, label) {
+  if (pending || !ids.length) return;
+  pending = { nonce: Date.now() + Math.random(), label };
+  sendToStreamlit({ action: 'analyze', ids, label, nonce: pending.nonce });
+  refresh();
 }
 
 /* ---------- transitions ---------- */
@@ -470,12 +508,13 @@ function goHome() {
 }
 
 /* ---------- modal ---------- */
-function openLead(id) {
+function openLead(id, keepScroll = false) {
   const a = byId[id]; if (!a) return;
   const v = V[a.verdict] || V.skip;
   const orig = byId[a.duplicate_of];
   const modal = $('#modal');
   modal.className = `modal tone-${a.verdict}`;
+  modal.dataset.id = id;
   modal.innerHTML = `
     <div class="m-hero">
       <button class="close" data-close>✕</button>
@@ -488,6 +527,9 @@ function openLead(id) {
         <div class="m-row"><span class="pill">${v.label}</span><span class="ppl">${a.people ?? '–'} people</span>
           ${a.source ? `<a class="linkish" href="${esc(a.source)}" target="_blank" rel="noreferrer">Source ↗</a>` : ''}
           <span class="ai-note">${a.ai?.length ? '✨ ' + a.ai.map(x => x[0].toUpperCase() + x.slice(1)).join(' & ') + ' by Gemini' : 'Rule-based'}</span></div>
+        ${AI_ON && canAnalyze(a) ? (pending
+            ? `<button class="gem-btn sm busy" disabled><span class="spin"></span> Gemini is analysing ${esc(pending.label)}…</button>`
+            : `<button class="gem-btn sm" data-analyze="${a.id}" data-label="${esc(a.company)}">✨ Analyse this lead with Gemini</button>`) : ''}
         <p class="m-why">${whyText(a)}</p>
         ${orig ? `<button class="linkish" data-open="${orig.id}">Open original: ${esc(orig.company)} →</button>` : ''}
         <div class="h">Reasoning</div>
@@ -505,7 +547,7 @@ function openLead(id) {
       </div>
     </div>`;
   $('#scrim').classList.add('show');
-  $('#scrim').scrollTop = 0;
+  if (!keepScroll) $('#scrim').scrollTop = 0;
 }
 const closeLead = () => $('#scrim').classList.remove('show');
 
@@ -520,9 +562,10 @@ function copyText(text, btn) {
 
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-open],[data-cat],[data-home],[data-switch],[data-close],[data-copy],[data-folder],[data-unfolder]');
+  const t = e.target.closest('[data-open],[data-cat],[data-home],[data-switch],[data-close],[data-copy],[data-folder],[data-unfolder],[data-analyze]');
   if (e.target.id === 'scrim') return closeLead();
   if (!t) return;
+  if (t.dataset.analyze) return requestAnalysis(t.dataset.analyze.split(','), t.dataset.label || 'leads');
   if (t.dataset.copy) return copyText(byId[t.dataset.copy].proposal, t);
   if (t.dataset.open) return openLead(t.dataset.open);
   if (t.dataset.folder) return openFolder(t.dataset.folder, t);
@@ -550,8 +593,44 @@ $('#q-home').addEventListener('input', e => {
 });
 $('#q-cat').addEventListener('input', e => renderCategory(current, e.target.value.trim().toLowerCase()));
 
-renderHome();
-if (OPEN_ON_LOAD) setTimeout(() => openLead(OPEN_ON_LOAD), 300);
+/* ---------- Streamlit two-way component protocol ---------- */
+function sendToStreamlit(value) {
+  window.parent.postMessage({ isStreamlitMessage: true, type: 'streamlit:setComponentValue', value, dataType: 'json' }, '*');
+}
+function setHeight() {
+  let h = 900;
+  try { h = Math.max(600, window.parent.innerHeight); } catch (e) {}
+  window.parent.postMessage({ isStreamlitMessage: true, type: 'streamlit:setFrameHeight', height: h }, '*');
+}
+
+// Re-draw whatever is on screen with fresh data, keeping the user where they are.
+function refresh() {
+  renderHome();
+  if (current) renderCategory(current, $('#q-cat').value.trim().toLowerCase());
+  const q = $('#q-home').value;
+  if (q) $('#q-home').dispatchEvent(new Event('input'));
+  const openId = $('#scrim').classList.contains('show') && $('#modal').dataset.id;
+  if (openId) openLead(openId, true);
+}
+
+window.addEventListener('message', e => {
+  const msg = e.data;
+  if (!msg || msg.type !== 'streamlit:render') return;
+  const args = msg.args || {};
+  DATA = JSON.parse(args.data || '[]').map(a => ({ ...a, company: String(a.company || 'Unknown').replace(/\s+\d+$/, '') }));
+  byId = Object.fromEntries(DATA.map(a => [a.id, a]));
+  USING_MOCK = !!args.mock;
+  AI_ON = !!args.gemini;
+  if (pending && args.ack === pending.nonce) pending = null;
+  refresh();
+  if (!started) { started = true; setHeight(); }
+  if (args.open_lead && args.open_lead !== lastOpenLead) {
+    lastOpenLead = args.open_lead;
+    setTimeout(() => openLead(args.open_lead), 300);
+  }
+});
+window.addEventListener('resize', setHeight);
+window.parent.postMessage({ isStreamlitMessage: true, type: 'streamlit:componentReady', apiVersion: 1 }, '*');
 </script>
 </body>
 </html>

@@ -1,8 +1,6 @@
-pydantic>=2.0.0
-pytest>=7.0.0
-pandas>=2.0.0
-streamlit>=1.30.0
-python-dotenv>=1.0.0
 streamlit>=1.40
-requests
+pandas>=2.0.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
 google-genai
+pytest>=7.0.0

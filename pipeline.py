@@ -1,16 +1,17 @@
 """pipeline.py — glue that runs the whole Catering Hunter flow end to end.
 
-    dataset CSV  ->  decision_agents (qualify -> evaluate -> choose_strategy)
-                 ->  proposal_generator.generate_content
-                 ->  plain dicts the Streamlit UI understands
+    data/*.csv  ->  agents/analysis_agent        (pasted announcements only)
+                ->  agents/decision_agents        qualify -> reason -> choose tier
+                ->  agents/proposal_generator     draft (template)
+                ->  plain dicts for the UI (app/)
 
-With Gemini on, gemini_batch.py writes the reasoning, scores and a tailored draft for each
-lead (many leads per request, several requests in parallel). The hard business rules
-(service area, capacity, notice period) always stay rule-based, and Member 1's strategy
-agent still turns the scores into a tier.
+Gemini (agents/gemini_batch.py) is on-demand: the UI asks for a section, a company folder or a
+single lead, and analyze_leads() sends just those leads. Gemini then writes the reasoning,
+scores and a tailored draft. The hard rules (service area, capacity, notice) always stay
+rule-based, and Member 1's strategy agent still turns the scores into the tier.
+Results are cached in data/ai_cache.json.
 
-Run it directly to sanity-check:   python pipeline.py
-The UI calls run_pipeline() via streamlit_ui/data.py.
+Sanity check:   python3 pipeline.py
 """
 from __future__ import annotations
 
@@ -18,10 +19,14 @@ import hashlib
 import json
 import math
 import re
+import sys
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT / "agents"))   # agent modules import each other by plain name
 
 # Member 1 — decision-making agents (their own schema models)
 from decision_agents import schemas as m1
@@ -42,11 +47,10 @@ import gemini_client
 from config import HUMAN_REVIEW_DISCLAIMER
 from proposal_generator import validate_generated_content
 
-ROOT = Path(__file__).parent
-DATASET = ROOT / "corporate_catering_hunter_synthetic_dataset_500.csv"
-NEW_LEADS = ROOT / "new_leads.csv"   # announcements pasted into the UI are saved here
-AI_CACHE = ROOT / "ai_cache.json"    # Gemini results, so they survive restarts
-AI_MAX_LEADS = int(__import__("os").getenv("GEMINI_MAX_LEADS", "0"))  # 0 = no limit per "Analyze all"
+DATA = ROOT / "data"
+DATASET = DATA / "corporate_catering_hunter_synthetic_dataset_500.csv"
+NEW_LEADS = DATA / "new_leads.csv"   # announcements pasted into the UI are saved here
+AI_CACHE = DATA / "ai_cache.json"    # Gemini results, so they survive restarts
 AI_CACHE_VERSION = 2
 
 # One shared business profile. Service areas include all confirmed hubs present in the dataset.
@@ -396,57 +400,53 @@ def _all_rows() -> list[dict]:
     return rows
 
 
-def run_all(ai: bool = False, progress=None) -> list[dict]:
-    """Every lead (pasted announcements first, then the dataset).
-
-    ai=False: rule-based, plus any Gemini results saved from earlier runs (instant).
-    ai=True:  also sends every lead Gemini hasn't analysed yet (best first, in parallel batches).
-    progress: optional callback(done, total) for a progress bar.
-    """
+def run_all() -> list[dict]:
+    """Every lead (pasted announcements first, then the dataset), plus any saved Gemini results."""
     rows = _all_rows()
-    cleans = [{k: v for k, v in r.items() if k != "_new"} for r in rows]
-    ctxs = [_prepare(r) for r in cleans]
     cache = _load_cache()
-
-    def cached_ai(i):
-        hit = cache.get(str(cleans[i].get("lead_id")))
-        return hit["ai"] if isinstance(hit, dict) and hit.get("key") == _row_key(cleans[i]) else None
-
-    if ai and gemini_client.is_enabled():
-        rule_tier = {i: choose_strategy(c["q1"], c["r1"]).pursuit_tier.value for i, c in enumerate(ctxs)}
-        todo = [i for i, c in enumerate(ctxs)
-                if c["q1"].status != m1.QualificationStatus.DISQUALIFIED and cached_ai(i) is None]
-        order = {"high_effort_pitch": 0, "standard_proposal": 1, "light_outreach": 2, "needs_research": 3}
-        todo.sort(key=lambda i: (order.get(rule_tier[i], 4), -(ctxs[i]["people"] or 0)))
-        if AI_MAX_LEADS:
-            todo = todo[:AI_MAX_LEADS]
-        results = gemini_batch.analyze([_ai_payload(ctxs[i]) for i in todo], PROFILE_M3, progress=progress)
-        for i in todo:
-            res = results.get(str(cleans[i].get("lead_id")))
-            if res:
-                cache[str(cleans[i].get("lead_id"))] = {"key": _row_key(cleans[i]), "ai": res}
-        _save_cache(cache)
-
     leads = []
-    for i, ctx in enumerate(ctxs):
+    for row in rows:
+        clean = {k: v for k, v in row.items() if k != "_new"}
+        hit = cache.get(str(clean.get("lead_id")))
+        ai = hit["ai"] if isinstance(hit, dict) and hit.get("key") == _row_key(clean) else None
         try:
-            lead = _finish(ctx, cached_ai(i))
+            lead = _finish(_prepare(clean), ai)
         except Exception as e:  # one bad row shouldn't kill the whole run
-            lead = {"id": str(cleans[i].get("lead_id")), "company": str(cleans[i].get("company_name")),
+            lead = {"id": str(clean.get("lead_id")), "company": str(clean.get("company_name")),
                     "title": "Error", "date": None, "location": None, "people": None, "verdict": "skip",
                     "why": f"Pipeline error: {e}", "duplicate_of": None, "source": None,
                     "reasoning": [], "dossier": None, "proposal": "", "ai": []}
-        if rows[i].get("_new"):
+        if row.get("_new"):
             lead["is_new"] = True
         leads.append(lead)
     return leads
 
 
+def analyze_leads(ids, progress=None) -> int:
+    """Send the given lead ids to Gemini (skipping out-of-policy ones) and cache the results.
+    Returns how many leads Gemini analysed. progress: optional callback(done, total)."""
+    if not gemini_client.is_enabled():
+        return 0
+    wanted = {str(i) for i in ids}
+    ctxs = [_prepare({k: v for k, v in r.items() if k != "_new"}) for r in _all_rows()
+            if str(r.get("lead_id")) in wanted]
+    ctxs = [c for c in ctxs if c["q1"].status != m1.QualificationStatus.DISQUALIFIED]
+    results = gemini_batch.analyze([_ai_payload(c) for c in ctxs], PROFILE_M3, progress=progress)
+    cache = _load_cache()
+    for c in ctxs:
+        lead_id = str(c["row"].get("lead_id"))
+        if lead_id in results:
+            cache[lead_id] = {"key": _row_key(c["row"]), "ai": results[lead_id]}
+    _save_cache(cache)
+    return sum(1 for c in ctxs if str(c["row"].get("lead_id")) in results)
+
+
 if __name__ == "__main__":
     from collections import Counter
 
-    leads = run_pipeline()
-    print(f"{len(leads)} leads")
+    leads = run_all()
+    print(f"{len(leads)} leads | Gemini {'ON' if gemini_client.is_enabled() else 'off'} "
+          f"| {sum(1 for l in leads if l.get('ai'))} analysed by Gemini so far")
     print(Counter(l["verdict"] for l in leads))
     print(Counter(l.get("tier") for l in leads))
     errors = [l for l in leads if l["title"] == "Error"]
